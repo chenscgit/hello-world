@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>计算器</title>
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+</head>
+<body>
+<!--<h2>伤害计算(填圣遗物面板)</h2>-->
+<br/>
+<table>
+    <tr>
+        <td>生命值：</td>
+        <td><input id="hpEx" placeholder="hpEx" value="15518"/></td>
+    </tr>
+    <tr>
+        <td>攻击力：</td>
+        <td><input id="atkEx" placeholder="atkEx" value="377"/></td>
+    </tr>
+    <tr>
+        <td>元素精通：</td>
+        <td><input id="master" placeholder="master" value="154"/></td>
+    </tr>
+    <tr>
+        <td>暴击率：</td>
+        <td><input id="cri" placeholder="cri" value="59.9"/></td>
+    </tr>
+    <tr>
+        <td>暴击伤害：</td>
+        <td><input id="criDmg" placeholder="criDmg" value="94.0"/></td>
+    </tr>
+    <tr>
+        <td>怪物等级：</td>
+        <td><input id="monsterLevel" placeholder="monsterLevel" value="90"/></td>
+    </tr>
+    <tr>
+        <td>怪物抗性：</td>
+        <td><input id="eleRes" placeholder="eleRes" value="10"/></td>
+    </tr>
+    <tr>
+        <td>普攻等级：</td>
+        <td><input id="aLevel" placeholder="aLevel" value="10"/></td>
+    </tr>
+    <tr>
+        <td>战技等级：</td>
+        <td><input id="eLevel" placeholder="eLevel" value="13"/></td>
+    </tr>
+    <tr>
+        <td>护摩精炼：</td>
+        <td><input id="hmLevel" placeholder="hmLevel" value="2"/></td>
+    </tr>
+    <tr>
+        <td colspan="2" style="padding: 10px"><button id="ok" style="padding: 10px;width:100%">计算</button></td>
+    </tr>
+    <tr>
+        <td>暴击伤害: </td>
+        <td id="dps"></td>
+    </tr>
+    <tr>
+        <td>期望伤害: </td>
+        <td id="except"></td>
+    </tr>
+</table>
+<br/>
+<script>
+$("#ok").on("click", function (event) {
+    //基础属性（人物+武器）
+    var hpBase = 15552;
+    var atkBase = 715;
+    var criBase = 0.05;
+    var criDmgBase = 0.884;
+    var criDmgArms = 0.662;
+
+    //圣遗物属性
+    var hpEx = $("#hpEx").val()/1;
+    var atkEx = $("#atkEx").val()/1;
+    var master = $("#master").val()/1;
+    var cri = criBase + $("#cri").val()/100;
+    var criDmg = criDmgBase + criDmgArms + $("#criDmg").val()/100;
+
+    //怪物等级
+    var monsterLevel = $("#monsterLevel").val()/1;
+    //怪物抗性
+    var eleRes = $("#eleRes").val()/1;
+    //普攻等级
+    var aLevel = $("#aLevel").val()/1;
+    //元素战技等级
+    var eLevel = $("#eLevel").val()/1;
+    //护摩精炼
+    var hmLevel = $("#hmLevel").val()/1;
+
+    var hmHpRates = [0.20, 0.25, 0.30, 0.35, 0.40];
+    var hmAtkRates = [0.008, 0.01, 0.012, 0.014, 0.016];
+    var hmHalfAtkRates = [0.01, 0.012, 0.014, 0.016, 0.018];
+    var aRates = [1.36, 1.452, 1.545, 1.669, 1.761, 1.869, 2.009, 2.148, 2.287, 2.426, 2.565];
+    var eRates = [0.0384, 0.0407, 0.043, 0.046, 0.0483, 0.0506, 0.0536, 0.0566, 0.0596, 0.0626, 0.0656, 0.0685, 0.0715];
+
+    //攻击力乘区,13级e倍率7.15%
+    var hp = hpBase + hpEx + hpBase * hmHpRates[hmLevel-1];
+    var atk = atkBase + atkEx + hp * eRates[eLevel-1] + hp * (hmAtkRates[hmLevel-1] + hmHalfAtkRates[hmLevel-1]);
+
+    //倍率乘区,10级重击倍率242.6%
+    var skillRate = aRates[aLevel-1];
+
+    //增伤乘区,火杯46.6%+天赋33%+魔女套22.5%
+    var eleDmgRate = 1 + 0.466 + 0.33 + 0.225;
+
+    //爆伤乘区
+    var criDmgRate = 1 + criDmg;
+
+    //反应乘区,蒸发1.5倍，魔女套15%
+    var masterRate = 1.5 * (1 + 0.15 + 278 * master / (master + 1400) /100)
+
+    //抗性乘区
+    var eleResRate = 1 - eleRes/100;
+
+    //防御乘区
+    var playerLevel = 90;
+    var defBuff = 0;
+    var defRate = (playerLevel + 100) / (( 1 - defBuff) * (monsterLevel + 100) + playerLevel + 100);
+
+    //最终伤害
+    var dps = atk * skillRate * eleDmgRate * eleResRate * defRate * criDmgRate * masterRate;
+    //期望伤害
+    var except = dps / (1 + criDmg) * (1 + criDmg * cri);
+
+    $("#dps").text(dps.toFixed(0));
+    $("#except").text(except.toFixed(0));
+});
+
+</script>
+
+</body>
