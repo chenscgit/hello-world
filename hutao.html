@@ -5,11 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=2.0, user-scalable=yes" />
     <title>计算器</title>
     <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <style>
+        td{padding:3px;}
+    </style>
 </head>
 <body>
 <!--<h2>伤害计算(填圣遗物面板)</h2>-->
 <br/>
-<table>
+<table style="margin: auto">
     <tr>
         <td>生命值：</td>
         <td><input id="hpEx" placeholder="hpEx" value="15518"/></td>
@@ -32,7 +35,7 @@
     </tr>
     <tr>
         <td>怪物等级：</td>
-        <td><input id="monsterLevel" placeholder="monsterLevel" value="87"/></td>
+        <td><input id="monsterLevel" placeholder="monsterLevel" value="90"/></td>
     </tr>
     <tr>
         <td>怪物抗性：</td>
@@ -51,7 +54,7 @@
         <td><input id="hmLevel" placeholder="hmLevel" value="2"/></td>
     </tr>
     <tr>
-        <td colspan="2" style="padding: 10px"><button id="ok" style="padding: 10px;width:100%">计算</button></td>
+        <td colspan="2"><button id="ok" style="margin:20px 0px;padding:10px;width:100%">计算</button></td>
     </tr>
     <tr>
         <td>暴击伤害: </td>
