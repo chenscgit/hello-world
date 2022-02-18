@@ -55,6 +55,15 @@
         <td><input id="hmLevel" size="10" placeholder="hmLevel" value="2"/></td>
     </tr>
     <tr>
+        <td>套装类型：</td>
+        <td>
+            <form>
+                <input type="radio" name="suit" value="0" checked>四魔女
+                <input type="radio" name="suit" value="1">四追忆
+            </form>
+        </td>
+    </tr>
+    <tr>
         <td colspan="2"><button id="ok" style="margin:20px 0px;padding:10px;width:100%">计算</button></td>
     </tr>
     <tr>
@@ -64,6 +73,14 @@
     <tr>
         <td>期望伤害: </td>
         <td id="except"></td>
+    </tr>
+    <tr>
+        <td>未暴击伤害: </td>
+        <td id="unCri"></td>
+    </tr>
+    <tr>
+        <td>未反应伤害: </td>
+        <td id="unRea"></td>
     </tr>
 </table>
 <br/>
@@ -91,6 +108,8 @@ $("#ok").on("click", function (event) {
     var aLevel = $("#aLevel").val()/1;
     //元素战技等级
     var eLevel = $("#eLevel").val()/1;
+    //套装类型，0-四魔女，1-四追忆
+    var suit = $("input[name='suit']:checked").val()/1;
     //护摩精炼
     var hmLevel = $("#hmLevel").val()/1;
 
@@ -108,13 +127,21 @@ $("#ok").on("click", function (event) {
     var skillRate = aRates[aLevel-1];
 
     //增伤乘区,火杯46.6%+天赋33%+魔女套22.5%
-    var eleDmgRate = 1 + 0.466 + 0.33 + 0.225;
+    var suitEleDmg = 0;
+    if(suit === 0)
+        suitEleDmg = 0.225;
+    else
+        suitEleDmg = 0.5;
+    var eleDmgRate = 1 + 0.466 + 0.33 + suitEleDmg;
 
     //爆伤乘区
     var criDmgRate = 1 + criDmg;
 
     //反应乘区,蒸发1.5倍，魔女套15%
-    var masterRate = 1.5 * (1 + 0.15 + 278 * master / (master + 1400) /100)
+    var suitMaster = 0;
+    if(suit === 0)
+        suitMaster = 0.15;
+    var masterRate = 1.5 * (1 + suitMaster + 278 * master / (master + 1400) /100)
 
     //抗性乘区
     var eleResRate = 1 - eleRes/100;
@@ -124,13 +151,19 @@ $("#ok").on("click", function (event) {
     var defBuff = 0;
     var defRate = (playerLevel + 100) / (( 1 - defBuff) * (monsterLevel + 100) + playerLevel + 100);
 
-    //最终伤害
+    //暴击伤害
     var dps = atk * skillRate * eleDmgRate * eleResRate * defRate * criDmgRate * masterRate;
     //期望伤害
     var except = dps / (1 + criDmg) * (1 + criDmg * cri);
+    //未暴击伤害
+    var unCri = dps / criDmgRate;
+    //未反应伤害
+    var unRea = dps / masterRate;
 
     $("#dps").text(dps.toFixed(0));
     $("#except").text(except.toFixed(0));
+    $("#unCri").text(unCri.toFixed(0));
+    $("#unRea").text(unRea.toFixed(0));
 });
 
 </script>
