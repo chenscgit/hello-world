@@ -67,9 +67,11 @@
 <table style="margin: auto">
     <tr>
         <td>
-            <label style="font-size: 12px;color: blue">图像识别(有点慢、不太准)<input name="photo" type="file" size="30" width="250" style="line-height:0;display:none" onchange="onFileChange()"></label>
+            <label style="font-size: 12px;color: blue">图像识别(手机)<input name="photo" type="file" size="30" width="250" style="line-height:0;display:none" onchange="onFileChange(0)"></label>
         </td>
-        <td></td>
+        <td>
+<!--            <label style="font-size: 12px;color: blue">图像识别(电脑)<input name="photo" type="file" size="30" width="250" style="line-height:0;display:none" onchange="onFileChange(1)"></label>-->
+        </td>
     </tr>
     <tr>
         <td>生命值：</td>
@@ -108,15 +110,24 @@
         <td><input id="eLevel" size="10" placeholder="战技等级" value="13"/></td>
     </tr>
     <tr>
-        <td>护摩精炼：</td>
-        <td><input id="hmLevel" size="10" placeholder="护摩精炼" value="2"/></td>
+        <td>武器精炼：</td>
+        <td><input id="armsLevel" size="10" placeholder="武器精炼" value="2"/></td>
+    </tr>
+    <tr>
+                <td>武器类型：</td>
+        <td>
+            <form>
+                                <input type="radio" name="armsType" value="0" checked>护摩
+                                <input type="radio" name="armsType" value="1">匣里
+            </form>
+        </td>
     </tr>
     <tr>
         <td>套装类型：</td>
         <td>
             <form>
-                <input type="radio" name="suit" value="0" checked>四魔女
-                <input type="radio" name="suit" value="1">四追忆
+                <input type="radio" name="suitType" value="0" checked>四魔女
+                <input type="radio" name="suitType" value="1">四追忆
             </form>
         </td>
     </tr>
@@ -147,7 +158,7 @@
         const exampleImage = $("[name=photo]").get(0).files[0];
 
         const worker = Tesseract.createWorker({
-            //langPath: '.',
+            langPath: '.',
             logger: m => console.log(m)
         });
         Tesseract.setLogging(true);
@@ -161,9 +172,15 @@
                 tessedit_char_whitelist: '0123456789.+%',
             });
 
+            var rec = {top: 0, left: 1300, width: 300, height: 850};
             var result = await worker.recognize(exampleImage, {
-                rectangle: {top: 0, left: 1300, width: 300, height: 850},
+                rectangle: rec,
             });
+
+            // for(var word in result.data.words) {
+            //     console.log(result.data.words[word].text);
+            // }
+
             $("#hpEx").val(result.data.words[0].text.replaceAll("+","").replaceAll("%","").replaceAll(" ","").replaceAll(".",""));
             $("#atkEx").val(result.data.words[1].text.replaceAll("+","").replaceAll("%","").replaceAll(" ","").replaceAll(".",""));
             $("#masterEx").val(result.data.words[3].text.replaceAll("+","").replaceAll("%","").replaceAll(" ","").replaceAll(".",""));
@@ -187,21 +204,25 @@
         var eleRes = $("#eleRes").val()/1;//怪物抗性
         var aLevel = $("#aLevel").val()/1;//普攻等级
         var eLevel = $("#eLevel").val()/1;//元素战技等级
-        var suit = $("input[name='suit']:checked").val()/1;//套装类型，0-四魔女，1-四追忆
-        var hmLevel = $("#hmLevel").val()/1;//护摩精炼
+        var armsLevel = $("#armsLevel").val()/1;//武器精炼
+        var armsType = $("input[name='armsType']:checked").val()/1;//武器类型，0-护摩，1-匣里
+        var suitType = $("input[name='suitType']:checked").val()/1;//套装类型，0-四魔女，1-四追忆
 
         //基础属性（人物+武器）
         var hpBase = 15552;//生命值白字
-        var atkBase = 715;//攻击力白字
+        var atkBase = armsType === 0 ? 714 : 560;//攻击力白字
         var masterBase = 0;//角色基础精通
         var criBase = 0.05;//角色基础暴击率
         var criDmgBase = 0.884;//角色基础爆伤
-        var criDmgArms = 0.662;//武器爆伤
+        var criDmgArms = armsType === 0 ? 0.662 : 0;//武器爆伤
+        var masterArms = armsType === 0 ? 0 : 221;//武器精通
 
-        var master = masterBase + masterEx;//面板精通
+        var master = masterBase + masterEx + masterArms;//面板精通
         var cri = criBase + criEx;//面板暴击
         var criDmg = criDmgBase + criDmgArms + criDmgEx;//面板爆伤
 
+        //匣里增伤buff
+        var xlEleDmgRates = [0.20, 0.24, 0.28, 0.32, 0.36];
         //护摩生命buff
         var hmHpRates = [0.20, 0.25, 0.30, 0.35, 0.40];
         //护摩满血攻击buff
@@ -214,9 +235,10 @@
         var eRates = [0.0384, 0.0407, 0.043, 0.046, 0.0483, 0.0506, 0.0536, 0.0566, 0.0596, 0.0626, 0.0656, 0.0685, 0.0715];
 
         //攻击力乘区
-        var hp = hpBase + hpEx + hpBase * hmHpRates[hmLevel-1];//最大生命值
+        var armsHp = armsType === 0 ? hpBase * hmHpRates[armsLevel-1] : 0;//武器增加生命值
+        var hp = hpBase + hpEx + armsHp;//最大生命值
         var skillAtk = hp * eRates[eLevel-1];//技能加攻
-        var armsAtk = hp * (hmAtkRates[hmLevel-1] + hmHalfAtkRates[hmLevel-1]);//武器加攻（半血）
+        var armsAtk = armsType === 0 ? hp * (hmAtkRates[armsLevel-1] + hmHalfAtkRates[armsLevel-1]) : 0;//武器加攻（半血）
         var atk = atkBase + atkEx + skillAtk + armsAtk;
 
         //技能倍率乘区
@@ -225,14 +247,15 @@
         //增伤乘区
         var cupEleDmg = 0.466;//杯子
         var inbornEleDmg = 0.33;//天赋
-        var suitEleDmg = suit === 0 ? 0.225 : 0.5;//套装
-        var eleDmgRate = 1 + cupEleDmg + inbornEleDmg + suitEleDmg;
+        var suitEleDmg = suitType === 0 ? 0.225 : 0.5;//套装
+        var armsEleDmg = armsType === 0 ? 0 : xlEleDmgRates[armsLevel-1];//武器增伤
+        var eleDmgRate = 1 + cupEleDmg + inbornEleDmg + suitEleDmg + armsEleDmg;
 
         //爆伤乘区
         var criDmgRate = 1 + criDmg;
 
         //反应乘区,蒸发1.5倍
-        var suitMaster = suit === 0 ? 0.15 : 0;//魔女15%
+        var suitMaster = suitType === 0 ? 0.15 : 0;//魔女15%
         var masterRate = 278 * master / (master + 1400) / 100;//精通对增幅反应的加成
         var reactionRate = 1.5 * (1 + suitMaster + masterRate)
 
