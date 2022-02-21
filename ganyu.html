@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=2.0, user-scalable=yes" />
+    <title>计算器</title>
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.1/dist/tesseract.min.js"></script>
+    <script type="text/javascript" src="spin.js" ></script>
+    <style>
+        td{padding:3px;font-size: 20px}
+        input{font-size: 20px}
+        #foo {
+            position: fixed;
+            left: 0;
+            top: 0;
+            _position: absolute;
+            width: 100%;
+            background: #000;
+            opacity: 0.5;
+            filter: alpha(opacity=50);
+            z-index: 999;
+            display: none;
+        }
+        @keyframes spinner-line-fade-more {
+            0%, 100% {
+                opacity: 0; /* minimum opacity */
+            }
+            1% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes spinner-line-fade-quick {
+            0%, 39%, 100% {
+                opacity: 0.25; /* minimum opacity */
+            }
+            40% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes spinner-line-fade-default {
+            0%, 100% {
+                opacity: 0.22; /* minimum opacity */
+            }
+            1% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes spinner-line-shrink {
+            0%, 25%, 100% {
+                /* minimum scale and opacity */
+                transform: scale(0.5);
+                opacity: 0.25;
+            }
+            26% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+<h2 align="center">甘雨伤害计算(填圣遗物面板)</h2>
+<table style="margin: auto">
+    <tr>
+        <td>
+            <label style="font-size: 12px;color: blue">图像识别(手机)<input name="photo" type="file" size="30" width="250" style="line-height:0;display:none" onchange="onFileChange(0)"></label>
+        </td>
+        <td>
+<!--            <label style="font-size: 12px;color: blue">图像识别(电脑)<input name="photo" type="file" size="30" width="250" style="line-height:0;display:none" onchange="onFileChange(1)"></label>-->
+        </td>
+    </tr>
+<!--    <tr>-->
+<!--        <td>生命值：</td>-->
+<!--        <td><input id="hpEx" size="10" placeholder="生命值" value="15518"/></td>-->
+<!--    </tr>-->
+    <tr>
+        <td>攻击力：</td>
+        <td><input id="atkEx" size="10" placeholder="攻击力" value="880"/></td>
+    </tr>
+    <tr>
+        <td>元素精通：</td>
+        <td><input id="masterEx" size="10" placeholder="元素精通" value="0"/></td>
+    </tr>
+    <tr>
+        <td>暴击率：</td>
+        <td><input id="criEx" size="10" placeholder="暴击率" value="46.3"/></td>
+    </tr>
+    <tr>
+        <td>暴击伤害：</td>
+        <td><input id="criDmgEx" size="10" placeholder="暴击伤害" value="135.3"/></td>
+    </tr>
+    <tr>
+        <td>怪物等级：</td>
+        <td><input id="monsterLevel" size="10" placeholder="怪物等级" value="88"/></td>
+    </tr>
+    <tr>
+        <td>怪物抗性：</td>
+        <td><input id="eleRes" size="10" placeholder="怪物抗性" value="10"/></td>
+    </tr>
+    <tr>
+        <td>普攻等级：</td>
+        <td><input id="aLevel" size="10" placeholder="普攻等级" value="10"/></td>
+    </tr>
+<!--    <tr>-->
+<!--        <td>战技等级：</td>-->
+<!--        <td><input id="eLevel" size="10" placeholder="战技等级" value="13"/></td>-->
+<!--    </tr>-->
+    <tr>
+        <td>武器精炼：</td>
+        <td><input id="armsLevel" size="10" placeholder="武器精炼" value="5"/></td>
+    </tr>
+    <tr>
+                <td>武器类型：</td>
+        <td>
+            <form>
+                                <input type="radio" name="armsType" value="0">阿莫斯
+                                <input type="radio" name="armsType" value="1" checked>试作
+            </form>
+        </td>
+    </tr>
+    <tr>
+        <td>套装类型：</td>
+        <td>
+            <form>
+                <input type="radio" name="suitType" value="0" checked>四乐团
+                <input type="radio" name="suitType" value="1">四冰风
+            </form>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2"><button id="ok" style="margin:20px 0px;padding:10px;width:100%">计算</button></td>
+    </tr>
+    <tr>
+        <td>不反应</td>
+    </tr>
+    <tr>
+        <td>暴击伤害(1): </td>
+        <td id="dps1"></td>
+    </tr>
+    <tr>
+        <td>暴击伤害(2): </td>
+        <td id="dps2"></td>
+    </tr>
+    <tr>
+        <td>暴击伤害(总): </td>
+        <td id="dps"></td>
+    </tr>
+    <tr>
+        <td>未暴击伤害(1): </td>
+        <td id="unCri1"></td>
+    </tr>
+    <tr>
+        <td>未暴击伤害(2): </td>
+        <td id="unCri2"></td>
+    </tr>
+    <tr>
+        <td>未暴击伤害(总): </td>
+        <td id="unCri"></td>
+    </tr>
+    <tr>
+        <td>期望伤害(总): </td>
+        <td id="except"></td>
+    </tr>
+    <tr>
+        <td>反应</td>
+    </tr>
+    <tr>
+        <td>暴击伤害(1): </td>
+        <td id="re_dps1"></td>
+    </tr>
+    <tr>
+        <td>暴击伤害(2): </td>
+        <td id="re_dps2"></td>
+    </tr>
+    <tr>
+        <td>暴击伤害(总): </td>
+        <td id="re_dps"></td>
+    </tr>
+    <tr>
+        <td>未暴击伤害(1): </td>
+        <td id="re_unCri1"></td>
+    </tr>
+    <tr>
+        <td>未暴击伤害(2): </td>
+        <td id="re_unCri2"></td>
+    </tr>
+    <tr>
+        <td>未暴击伤害(总): </td>
+        <td id="re_unCri"></td>
+    </tr>
+    <tr>
+        <td>期望伤害(总): </td>
+        <td id="re_except"></td>
+    </tr>
+</table>
+<div id="foo" style="width: 100%; height: 100%"></div>
+<script>
+    async function onFileChange() {
+        showLoading(true);
+        const exampleImage = $("[name=photo]").get(0).files[0];
+
+        const worker = Tesseract.createWorker({
+            langPath: '.',
+            logger: m => console.log(m)
+        });
+        Tesseract.setLogging(true);
+        work();
+
+        async function work() {
+            await worker.load();
+            await worker.loadLanguage('eng');
+            await worker.initialize('eng');
+            await worker.setParameters({
+                tessedit_char_whitelist: '0123456789.+%',
+            });
+
+            var rec = {top: 0, left: 1300, width: 300, height: 850};
+            var result = await worker.recognize(exampleImage, {
+                rectangle: rec,
+            });
+
+            // for(var word in result.data.words) {
+            //     console.log(result.data.words[word].text);
+            // }
+
+            $("#hpEx").val(result.data.words[0].text.replaceAll("+","").replaceAll("%","").replaceAll(" ","").replaceAll(".",""));
+            $("#atkEx").val(result.data.words[1].text.replaceAll("+","").replaceAll("%","").replaceAll(" ","").replaceAll(".",""));
+            $("#masterEx").val(result.data.words[3].text.replaceAll("+","").replaceAll("%","").replaceAll(" ","").replaceAll(".",""));
+            $("#criEx").val(result.data.words[5].text.replaceAll("+","").replaceAll("%","").replaceAll(" ",""));
+            $("#criDmgEx").val(result.data.words[6].text.replaceAll("+","").replaceAll("%","").replaceAll(" ",""));
+            showLoading(false);
+            await worker.terminate();
+        }
+    }
+
+    $("#ok").on("click", function (event) {
+        //圣遗物属性
+        //var hpEx = $("#hpEx").val()/1;//生命
+        var atkEx = $("#atkEx").val()/1;//攻击
+        var masterEx = $("#masterEx").val()/1;//精通
+        var criEx = $("#criEx").val()/100;//暴击
+        var criDmgEx = $("#criDmgEx").val()/100;//爆伤
+
+        //其他信息
+        var monsterLevel = $("#monsterLevel").val()/1;//怪物等级
+        var eleRes = $("#eleRes").val()/1;//怪物抗性
+        var aLevel = $("#aLevel").val()/1;//普攻等级
+        var armsLevel = $("#armsLevel").val()/1;//武器精炼
+        var armsType = $("input[name='armsType']:checked").val()/1;//武器类型，0-阿莫斯，1-试作
+        var suitType = $("input[name='suitType']:checked").val()/1;//套装类型，0-四乐团，1-四冰
+
+        //基础属性（人物+武器）
+        //var hpBase = 9797;//生命值白字
+        var atkBase = armsType === 0 ? 943 : 845;//攻击力白字
+        var masterBase = 0;//角色基础精通
+        var criBase = 0.05;//角色基础暴击率
+        var criDmgBase = 0.884;//角色基础爆伤
+        var atkArms = armsType === 0 ? atkBase*0.496 : atkBase*0.413;//武器副属性攻击
+        var criSuit = suitType === 0 ? 0 : 0.2;//冰套按20暴击算
+        var criInborn = 0.2;//天赋20暴击
+        var masterSuit = suitType === 0 ? 80 : 0;//乐团2的精通不会显示在圣遗物面板上
+
+        var master = masterBase + masterEx + masterSuit;//面板精通
+        var cri = criBase + criEx + criInborn + criSuit;//面板暴击
+        var criDmg = criDmgBase + criDmgEx;//面板爆伤
+
+        //阿莫斯增伤buff
+        var amsEleDmgRates = [0.52, 0.65, 0.78, 0.91, 1.04];
+        //试作攻击buff
+        var szAtkRates = [0.36, 0.45, 0.54, 0.63, 0.72];
+        //普攻技能倍率-重击第一段
+        var a1Rates = [1.28, 1.38, 1.47, 1.60, 1.70, 1.79, 1.92, 2.05, 2.18, 2.30, 2.43];
+        //普攻技能倍率-重击第二段
+        var a2Rates = [2.18, 2.34, 2.50, 2.72, 2.88, 3.05, 3.26, 3.48, 3.70, 3.92, 4.13];
+
+        //攻击力乘区
+        var armsAtk = armsType === 0 ? 0 : atkBase*szAtkRates[armsLevel-1];//武器加攻（试作）
+        var atk = atkBase + atkEx + atkArms + armsAtk;
+
+        //技能倍率乘区
+        var skillRate1 = a1Rates[aLevel-1];
+        var skillRate2 = a2Rates[aLevel-1];
+
+        //增伤乘区
+        var cupEleDmg = 0.466;//杯子
+        var inbornEleDmg = 0;//天赋
+        var suitEleDmg = suitType === 0 ? 0.35 : 0.15;//套装
+        var armsEleDmg = armsType === 0 ? amsEleDmgRates[armsLevel-1] : 0;//武器增伤
+        var eleDmgRate = 1 + cupEleDmg + inbornEleDmg + suitEleDmg + armsEleDmg;
+
+        //爆伤乘区
+        var criDmgRate = 1 + criDmg;
+
+        //反应乘区,冰打火融化1.5倍
+        var suitMaster = suitType === 0 ? 0 : 0;
+        var masterRate = 278 * master / (master + 1400) / 100;//精通对增幅反应的加成
+        var reactionRate = 1.5 * (1 + suitMaster + masterRate)
+
+        //抗性乘区
+        var eleResPercent = eleRes/100;
+        var eleResRate = 0;
+        if(eleResPercent <=0) {
+            eleResRate = 1 - eleResPercent/2;
+        } else if (eleResPercent > 0 && eleResPercent < 75) {
+            eleResRate = 1 - eleResPercent;
+        } else {
+            eleResRate = 1/(4*eleResPercent + 1);
+        }
+
+        //防御乘区
+        var playerLevel = 90;//玩家等级
+        var monsterDef = monsterLevel * 5 + 500;//怪物防御力
+        var defAddBuff = 0;//增防
+        var defSubBuff = 0;//减防
+        var defIgnBuff = 0;//无视
+        var defRate = (playerLevel + 100) * 5 / ((playerLevel + 100) * 5 + monsterDef * ( 1 + defAddBuff - defSubBuff) * (1 + defIgnBuff));
+
+        //暴击伤害
+        var dps1 = atk * skillRate1 * eleDmgRate * eleResRate * defRate * criDmgRate;
+        var dps2 = atk * skillRate2 * eleDmgRate * eleResRate * defRate * criDmgRate;
+        var dps = dps1 + dps2;
+        //反应伤害
+        var re_dps1 = dps1 * reactionRate;
+        var re_dps2 = dps2 * reactionRate;
+        var re_dps = re_dps1 + re_dps2;
+        //期望伤害
+        var except = dps / (1 + criDmg) * (1 + criDmg * cri);
+        var re_except = re_dps / (1 + criDmg) * (1 + criDmg * cri);
+        //未暴击伤害
+        var unCri1 = dps1 / criDmgRate;
+        var unCri2 = dps2 / criDmgRate;
+        var unCri = dps / criDmgRate;
+        var re_unCri1 = re_dps1 / criDmgRate;
+        var re_unCri2 = re_dps2 / criDmgRate;
+        var re_unCri = re_dps / criDmgRate;
+
+        $("#dps1").text(dps1.toFixed(0));
+        $("#dps2").text(dps2.toFixed(0));
+        $("#dps").text(dps.toFixed(0));
+
+        $("#unCri1").text(unCri1.toFixed(0));
+        $("#unCri2").text(unCri2.toFixed(0));
+        $("#unCri").text(unCri.toFixed(0));
+
+        $("#except").text(except.toFixed(0));
+
+        $("#re_dps1").text(re_dps1.toFixed(0));
+        $("#re_dps2").text(re_dps2.toFixed(0));
+        $("#re_dps").text(re_dps.toFixed(0));
+
+        $("#re_unCri1").text(re_unCri1.toFixed(0));
+        $("#re_unCri2").text(re_unCri2.toFixed(0));
+        $("#re_unCri").text(re_unCri.toFixed(0));
+
+        $("#re_except").text(re_except.toFixed(0));
+    });
+</script>
+<script>
+    var opts = {
+        lines: 9, // The number of lines to draw
+        length: 0, // The length of each line
+        width: 10, // The line thickness
+        radius: 15, // The radius of the inner circle
+        corners: 1, // Corner roundness (0..1)
+        rotate: 0, // The rotation offset
+        color: '#fff', // #rgb or #rrggbb
+        speed: 1, // Rounds per second
+        trail: 60, // Afterglow percentage
+        shadow: false, // Whether to render a shadow
+        hwaccel: false, // Whether to use hardware acceleration
+        className: 'spin', // The CSS class to assign to the spinner
+        zIndex: 2e9, // The z-index (defaults to 2000000000)
+        top: '50%', // Top position relative to parent in px
+        left: '50%' // Left position relative to parent in px
+    };
+    var spinner = new Spinner(opts);
+    //显示与隐藏加载动画
+    function showLoading(result) {
+        var spinContainer = document.getElementById("foo");
+        if (result) {undefined
+            var target = $(spinContainer).get(0);
+            spinner.spin(target);
+            spinContainer.style.height = document.documentElement.clientHeight + "px";
+            $(spinContainer).show();
+        } else {undefined
+            spinner.spin();
+            $(spinContainer).hide();
+        }
+    }
+</script>
+</body>
+</html>
