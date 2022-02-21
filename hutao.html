@@ -110,6 +110,10 @@
         <td><input id="eLevel" size="10" placeholder="战技等级" value="13"/></td>
     </tr>
     <tr>
+        <td>大招等级：</td>
+        <td><input id="qLevel" size="10" placeholder="大招等级" value="10"/></td>
+    </tr>
+    <tr>
         <td>武器精炼：</td>
         <td><input id="armsLevel" size="10" placeholder="武器精炼" value="2"/></td>
     </tr>
@@ -135,20 +139,92 @@
         <td colspan="2"><button id="ok" style="margin:20px 0px;padding:10px;width:100%">计算</button></td>
     </tr>
     <tr>
-        <td>暴击伤害: </td>
-        <td id="dps"></td>
+        <td>重击-蒸发</td>
+        <td></td>
     </tr>
     <tr>
-        <td>期望伤害: </td>
-        <td id="except"></td>
+        <td>暴击伤害: </td>
+        <td id="dps"></td>
     </tr>
     <tr>
         <td>未暴击伤害: </td>
         <td id="unCri"></td>
     </tr>
     <tr>
+        <td>期望伤害: </td>
+        <td id="except"></td>
+    </tr>
+    <tr>
+        <td> </td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>重击-融化</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>暴击伤害: </td>
+        <td id="melt_dps"></td>
+    </tr>
+    <tr>
+        <td>未暴击伤害: </td>
+        <td id="melt_unCri"></td>
+    </tr>
+    <tr>
+        <td>期望伤害: </td>
+        <td id="melt_except"></td>
+    </tr>
+    <tr>
         <td>未反应伤害: </td>
         <td id="unRea"></td>
+    </tr>
+    <tr>
+        <td> </td>
+        <td></td>
+    </tr>
+    <tr>
+        <td> </td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>大招-蒸发</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>暴击伤害: </td>
+        <td id="dps2"></td>
+    </tr>
+    <tr>
+        <td>未暴击伤害: </td>
+        <td id="unCri2"></td>
+    </tr>
+    <tr>
+        <td>期望伤害: </td>
+        <td id="except2"></td>
+    </tr>
+    <tr>
+        <td> </td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>大招-融化</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>暴击伤害: </td>
+        <td id="melt_dps2"></td>
+    </tr>
+    <tr>
+        <td>未暴击伤害: </td>
+        <td id="melt_unCri2"></td>
+    </tr>
+    <tr>
+        <td>期望伤害: </td>
+        <td id="melt_except2"></td>
+    </tr>
+    <tr>
+        <td>未反应伤害: </td>
+        <td id="unRea2"></td>
     </tr>
 </table>
 <div id="foo" style="width: 100%; height: 100%"></div>
@@ -204,6 +280,7 @@
         var eleRes = $("#eleRes").val()/1;//怪物抗性
         var aLevel = $("#aLevel").val()/1;//普攻等级
         var eLevel = $("#eLevel").val()/1;//元素战技等级
+        var qLevel = $("#qLevel").val()/1;//元素爆发等级
         var armsLevel = $("#armsLevel").val()/1;//武器精炼
         var armsType = $("input[name='armsType']:checked").val()/1;//武器类型，0-护摩，1-匣里
         var suitType = $("input[name='suitType']:checked").val()/1;//套装类型，0-四魔女，1-四追忆
@@ -233,6 +310,8 @@
         var aRates = [1.36, 1.452, 1.545, 1.669, 1.761, 1.869, 2.009, 2.148, 2.287, 2.426, 2.565];
         //e技能buff
         var eRates = [0.0384, 0.0407, 0.043, 0.046, 0.0483, 0.0506, 0.0536, 0.0566, 0.0596, 0.0626, 0.0656, 0.0685, 0.0715];
+        //q技能倍率
+        var qRates = [3.79, 4.02, 4.24, 4.54, 4.77, 4.99, 5.29, 5.58, 5.88, 6.17, 6.47, 6.76, 7.06];
 
         //攻击力乘区
         var armsHp = armsType === 0 ? hpBase * hmHpRates[armsLevel-1] : 0;//武器增加生命值
@@ -243,6 +322,7 @@
 
         //技能倍率乘区
         var skillRate = aRates[aLevel-1];
+        var skillRate2 = qRates[qLevel-1];
 
         //增伤乘区
         var cupEleDmg = 0.466;//杯子
@@ -254,10 +334,11 @@
         //爆伤乘区
         var criDmgRate = 1 + criDmg;
 
-        //反应乘区,蒸发1.5倍
+        //反应乘区,蒸发1.5倍，融化2倍
         var suitMaster = suitType === 0 ? 0.15 : 0;//魔女15%
         var masterRate = 278 * master / (master + 1400) / 100;//精通对增幅反应的加成
-        var reactionRate = 1.5 * (1 + suitMaster + masterRate)
+        var reactionRate = 1.5 * (1 + suitMaster + masterRate);//蒸发
+        var reactionRate2 = 2 * (1 + suitMaster + masterRate);//融化
 
         //抗性乘区
         var eleResPercent = eleRes/100;
@@ -278,19 +359,56 @@
         var defIgnBuff = 0;//无视
         var defRate = (playerLevel + 100) * 5 / ((playerLevel + 100) * 5 + monsterDef * ( 1 + defAddBuff - defSubBuff) * (1 + defIgnBuff));
 
+        //e技能
+        //蒸发
         //暴击伤害
         var dps = atk * skillRate * eleDmgRate * eleResRate * defRate * criDmgRate * reactionRate;
         //期望伤害
         var except = dps / (1 + criDmg) * (1 + criDmg * cri);
         //未暴击伤害
         var unCri = dps / criDmgRate;
+        //融化
+        //暴击伤害
+        var melt_dps = atk * skillRate * eleDmgRate * eleResRate * defRate * criDmgRate * reactionRate2;
+        //期望伤害
+        var melt_except = melt_dps / (1 + criDmg) * (1 + criDmg * cri);
+        //未暴击伤害
+        var melt_unCri = melt_dps / criDmgRate;
         //未反应伤害
         var unRea = dps / reactionRate;
+
+        //大招
+        //蒸发
+        //暴击伤害
+        var dps2 = atk * skillRate2 * eleDmgRate * eleResRate * defRate * criDmgRate * reactionRate;
+        //期望伤害
+        var except2 = dps2 / (1 + criDmg) * (1 + criDmg * cri);
+        //未暴击伤害
+        var unCri2 = dps2 / criDmgRate;
+        //融化
+        //暴击伤害
+        var melt_dps2 = atk * skillRate2 * eleDmgRate * eleResRate * defRate * criDmgRate * reactionRate2;
+        //期望伤害
+        var melt_except2 = melt_dps2 / (1 + criDmg) * (1 + criDmg * cri);
+        //未暴击伤害
+        var melt_unCri2 = melt_dps2 / criDmgRate;
+        //未反应伤害
+        var unRea2 = dps2 / reactionRate;
 
         $("#dps").text(dps.toFixed(0));
         $("#except").text(except.toFixed(0));
         $("#unCri").text(unCri.toFixed(0));
+        $("#melt_dps").text(melt_dps.toFixed(0));
+        $("#melt_except").text(melt_except.toFixed(0));
+        $("#melt_unCri").text(melt_unCri.toFixed(0));
         $("#unRea").text(unRea.toFixed(0));
+        $("#dps2").text(dps2.toFixed(0));
+        $("#except2").text(except2.toFixed(0));
+        $("#unCri2").text(unCri2.toFixed(0));
+        $("#melt_dps2").text(melt_dps2.toFixed(0));
+        $("#melt_except2").text(melt_except2.toFixed(0));
+        $("#melt_unCri2").text(melt_unCri2.toFixed(0));
+        $("#unRea2").text(unRea2.toFixed(0));
     });
 </script>
 <script>
