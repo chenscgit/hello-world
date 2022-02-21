@@ -147,7 +147,7 @@
         const exampleImage = $("[name=photo]").get(0).files[0];
 
         const worker = Tesseract.createWorker({
-            //langPath: './lang',
+            //langPath: '.',
             logger: m => console.log(m)
         });
         Tesseract.setLogging(true);
@@ -155,20 +155,18 @@
 
         async function work() {
             await worker.load();
-            await worker.loadLanguage('eng');
-            await worker.initialize('eng');
+            await worker.loadLanguage('eng2');
+            await worker.initialize('eng2');
             await worker.setParameters({
                 tessedit_char_whitelist: '0123456789.+%',
             });
 
             var result = await worker.recognize(exampleImage);
-            $("#hpEx").val(result.data.words[2].text.replaceAll("+","").replaceAll("%","").replaceAll(" ","").replaceAll(".",""));
-            $("#atkEx").val(result.data.words[4].text.replaceAll("+","").replaceAll("%","").replaceAll(" ",""));
-            var masterEx = (result.data.words[7].text.substring(result.data.words[7].text.indexOf("%")+1)
-                + result.data.words[8].text).replaceAll("+","").replaceAll("%","").replaceAll(" ","");
-            $("#masterEx").val(masterEx);
-            $("#criEx").val(result.data.words[17].text.replaceAll("+","").replaceAll("%","").replaceAll(" ",""));
-            $("#criDmgEx").val(result.data.words[19].text.replaceAll("+","").replaceAll("%","").replaceAll(" ",""));
+            $("#hpEx").val(result.data.words[0].text.replaceAll("+","").replaceAll("%","").replaceAll(" ","").replaceAll(".",""));
+            $("#atkEx").val(result.data.words[1].text.replaceAll("+","").replaceAll("%","").replaceAll(" ","").replaceAll(".",""));
+            $("#masterEx").val(result.data.words[2].text.replaceAll("+","").replaceAll("%","").replaceAll(" ","").replaceAll(".",""));
+            $("#criEx").val(result.data.words[5].text.replaceAll("+","").replaceAll("%","").replaceAll(" ",""));
+            $("#criDmgEx").val(result.data.words[6].text.replaceAll("+","").replaceAll("%","").replaceAll(" ",""));
             showLoading(false);
             await worker.terminate();
         }
