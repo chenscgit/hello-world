@@ -237,7 +237,15 @@
         var reactionRate = 1.5 * (1 + suitMaster + masterRate)
 
         //抗性乘区
-        var eleResRate = 1 - eleRes/100;
+        var eleResPercent = eleRes/100;
+        var eleResRate = 0;
+        if(eleResPercent <=0) {
+            eleResRate = 1 - eleResPercent/2;
+        } else if (eleResPercent > 0 && eleResPercent < 75) {
+            eleResRate = 1 - eleResPercent;
+        } else {
+            eleResRate = 1/(4*eleResPercent + 1);
+        }
 
         //防御乘区
         var playerLevel = 90;//玩家等级
