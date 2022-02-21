@@ -161,14 +161,14 @@
                 tessedit_char_whitelist: '0123456789.+%',
             });
 
-            var result = await worker.recognize(exampleImage, {
-                rectangle: {top: 0, left: 1300, width: 300, height: 1080},
-            });
-            $("#hpEx").val(result.data.words[0].text.replaceAll("+","").replaceAll("%","").replaceAll(" ","").replaceAll(".",""));
-            $("#atkEx").val(result.data.words[1].text.replaceAll("+","").replaceAll("%","").replaceAll(" ",""));
-            $("#masterEx").val(result.data.words[3].text.replaceAll("+","").replaceAll("%","").replaceAll(" ",""));
-            $("#criEx").val(result.data.words[5].text.replaceAll("+","").replaceAll("%","").replaceAll(" ",""));
-            $("#criDmgEx").val(result.data.words[7].text.replaceAll("+","").replaceAll("%","").replaceAll(" ",""));
+            var result = await worker.recognize(exampleImage);
+            $("#hpEx").val(result.data.words[2].text.replaceAll("+","").replaceAll("%","").replaceAll(" ","").replaceAll(".",""));
+            $("#atkEx").val(result.data.words[4].text.replaceAll("+","").replaceAll("%","").replaceAll(" ",""));
+            var masterEx = (result.data.words[7].text.substring(result.data.words[7].text.indexOf("%")+1)
+                + result.data.words[8].text).replaceAll("+","").replaceAll("%","").replaceAll(" ","");
+            $("#masterEx").val(masterEx);
+            $("#criEx").val(result.data.words[17].text.replaceAll("+","").replaceAll("%","").replaceAll(" ",""));
+            $("#criDmgEx").val(result.data.words[19].text.replaceAll("+","").replaceAll("%","").replaceAll(" ",""));
             showLoading(false);
             await worker.terminate();
         }
