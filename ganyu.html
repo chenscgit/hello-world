@@ -110,25 +110,29 @@
 <!--        <td><input id="eLevel" size="10" placeholder="战技等级" value="13"/></td>-->
 <!--    </tr>-->
     <tr>
+        <td>命座数量：</td>
+        <td><input id="life" size="10" placeholder="命座数量" value="0"/></td>
+    </tr>
+    <tr>
         <td>武器精炼：</td>
-        <td><input id="armsLevel" size="10" placeholder="武器精炼" value="5"/></td>
+        <td><input id="armsLevel" size="10" placeholder="武器精炼" value="1"/></td>
     </tr>
     <tr>
                 <td>武器类型：</td>
         <td>
-            <form>
-                                <input type="radio" name="armsType" value="0">阿莫斯
-                                <input type="radio" name="armsType" value="1" checked>试作
-            </form>
+            <select name="armsType" style="width: 100%">
+                <option value = "0" selected>阿莫斯</option>
+                <option value = "1">试作</option>
+            </select>
         </td>
     </tr>
     <tr>
         <td>套装类型：</td>
         <td>
-            <form>
-                <input type="radio" name="suitType" value="0" checked>四乐团
-                <input type="radio" name="suitType" value="1">四冰风
-            </form>
+            <select name="suitType" style="width: 100%">
+                <option value = "0" selected>四乐团</option>
+                <option value = "1">四冰风</option>
+            </select>
         </td>
     </tr>
     <tr>
@@ -249,9 +253,10 @@
         var monsterLevel = $("#monsterLevel").val()/1;//怪物等级
         var eleRes = $("#eleRes").val()/1;//怪物抗性
         var aLevel = $("#aLevel").val()/1;//普攻等级
+        var life = $("#life").val()/1;//命座
         var armsLevel = $("#armsLevel").val()/1;//武器精炼
-        var armsType = $("input[name='armsType']:checked").val()/1;//武器类型，0-阿莫斯，1-试作
-        var suitType = $("input[name='suitType']:checked").val()/1;//套装类型，0-四乐团，1-四冰
+        var armsType = $("select[name='armsType']").val()/1;//武器类型，0-阿莫斯，1-试作
+        var suitType = $("select[name='suitType']").val()/1;//套装类型，0-四乐团，1-四冰
 
         //基础属性（人物+武器）
         //var hpBase = 9797;//生命值白字
@@ -302,6 +307,9 @@
 
         //抗性乘区
         var eleResPercent = eleRes/100;
+        if(life >= 1) {
+            eleResPercent -= 0.15;
+        }
         var eleResRate = 0;
         if(eleResPercent <=0) {
             eleResRate = 1 - eleResPercent/2;
