@@ -118,21 +118,21 @@
         <td><input id="armsLevel" size="10" placeholder="武器精炼" value="2"/></td>
     </tr>
     <tr>
-                <td>武器类型：</td>
+        <td>武器类型：</td>
         <td>
-            <form>
-                                <input type="radio" name="armsType" value="0" checked>护摩
-                                <input type="radio" name="armsType" value="1">匣里
-            </form>
+            <select name="armsType" style="width: 100%">
+                <option value = "0" selected>护摩之杖</option>
+                <option value = "1">匣里灭辰</option>
+            </select>
         </td>
     </tr>
     <tr>
         <td>套装类型：</td>
         <td>
-            <form>
-                <input type="radio" name="suitType" value="0" checked>四魔女
-                <input type="radio" name="suitType" value="1">四追忆
-            </form>
+            <select name="suitType" style="width: 100%">
+                <option value = "0" selected>4魔女</option>
+                <option value = "1">4追忆</option>
+            </select>
         </td>
     </tr>
     <tr>
@@ -282,8 +282,8 @@
         var eLevel = $("#eLevel").val()/1;//元素战技等级
         var qLevel = $("#qLevel").val()/1;//元素爆发等级
         var armsLevel = $("#armsLevel").val()/1;//武器精炼
-        var armsType = $("input[name='armsType']:checked").val()/1;//武器类型，0-护摩，1-匣里
-        var suitType = $("input[name='suitType']:checked").val()/1;//套装类型，0-四魔女，1-四追忆
+        var armsType = $("select[name='armsType']").val()/1;//武器类型，0-护摩，1-匣里
+        var suitType = $("select[name='suitType']").val()/1;//套装类型，0-四魔女，1-四追忆
 
         //基础属性（人物+武器）
         var hpBase = 15552;//生命值白字
@@ -359,7 +359,7 @@
         var defIgnBuff = 0;//无视
         var defRate = (playerLevel + 100) * 5 / ((playerLevel + 100) * 5 + monsterDef * ( 1 + defAddBuff - defSubBuff) * (1 + defIgnBuff));
 
-        //e技能
+        //重击
         //蒸发
         //暴击伤害
         var dps = atk * skillRate * eleDmgRate * eleResRate * defRate * criDmgRate * reactionRate;
