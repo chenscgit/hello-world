@@ -122,21 +122,20 @@
         <td><input id="armsLevel" size="10" placeholder="武器精炼" value="1"/></td>
     </tr>
     <tr>
-                <td>武器类型：</td>
+        <td>武器类型：</td>
         <td>
-            <form>
-                                <input type="radio" name="armsType" value="0" checked>雾切
-                                <input type="radio" name="armsType" value="1">天目
-            </form>
+            <select name="armsType" style="width: 100%">
+                <option value = "0" selected>雾切</option>
+                <option value = "1">天目</option>
+            </select>
         </td>
     </tr>
     <tr>
         <td>套装类型：</td>
         <td>
-            <form>
-                <input type="radio" name="suitType" value="0" checked>四冰
-<!--                <input type="radio" name="suitType" value="1">四追忆-->
-            </form>
+            <select name="suitType" style="width: 100%">
+                <option value = "0" selected>四冰</option>
+            </select>
         </td>
     </tr>
     <tr>
@@ -250,8 +249,8 @@
         var qLevel = $("#qLevel").val()/1;//元素爆发等级
         var life = $("#life").val()/1;//命座
         var armsLevel = $("#armsLevel").val()/1;//武器精炼
-        var armsType = $("input[name='armsType']:checked").val()/1;//武器类型，0-雾切，1-天目
-        var suitType = $("input[name='suitType']:checked").val()/1;//套装类型，0-四冰
+        var armsType = $("select[name='armsType']").val()/1;//武器类型，0-雾切，1-天目
+        var suitType = $("select[name='suitType']").val()/1;//套装类型，0-四冰
 
         //基础属性（人物+武器）
         //var hpBase = 12858;//生命值白字
