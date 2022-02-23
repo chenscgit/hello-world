@@ -99,7 +99,7 @@
     </tr>
     <tr>
         <td>怪物抗性：</td>
-        <td><input id="eleRes" size="10" placeholder="怪物抗性" value="10"/></td>
+        <td><input id="eleRes" size="10" placeholder="怪物抗性" value="-20"/></td>
     </tr>
     <tr>
         <td>普攻等级：</td>
@@ -121,10 +121,10 @@
         <td>武器类型：</td>
         <td>
             <select name="armsType" style="width: 100%">
-                <option value ="0" selected>护摩之杖</option>
+                <option value = "0" selected>护摩之杖</option>
                 <option value = "1">龙脊长枪</option>
                 <option value = "2">流月针</option>
-                <option value ="3">白缨枪</option>
+                <option value = "3">白缨枪</option>
             </select>
         </td>
     </tr>
@@ -132,10 +132,35 @@
         <td>套装类型：</td>
         <td>
             <select name="suitType" style="width: 100%">
-                    <option value ="0" selected>2苍白+2染血</option>
-                    <option value ="1">4苍白</option>
-                </select>
+                <option value = "0" selected>2苍白+2染血</option>
+                <option value = "1">4苍白</option>
+            </select>
         </td>
+    </tr>
+    <tr>
+        <td>额外buff</td>
+        <td>
+            <input type="checkbox" id="buff_cd" value="0" checked/>超导
+            <input type="checkbox" id="buff_sy" value="0"/>双岩
+            <br/>
+            <input type="checkbox" id="buff_zs" value="0"/>宗室
+            <input type="checkbox" id="buff_qy" value="0"/>千岩
+            <br/>
+            <input type="checkbox" id="buff_ls" value="0"/>罗莎
+            <input type="checkbox" id="buff_yj" value="0" onchange="showYjTab()"/>云堇
+        </td>
+    </tr>
+    <tr name="yjAttr" hidden>
+        <td>云堇防御：</td>
+        <td><input id="yjRe" size="10" placeholder="云堇防御" value="2698"/></td>
+    </tr>
+    <tr name="yjAttr" hidden>
+        <td>云堇大招：</td>
+        <td><input id="yjQLevel" size="10" placeholder="云堇大招等级" value="12"/></td>
+    </tr>
+    <tr name="yjAttr" hidden>
+        <td>云堇命座：</td>
+        <td><input id="yjLife" size="10" placeholder="云堇命座" value="3"/></td>
     </tr>
     <tr>
         <td colspan="2"><button id="ok" style="margin:20px 0px;padding:10px;width:100%">计算</button></td>
@@ -220,6 +245,7 @@
 </table>
 <div id="foo" style="width: 100%; height: 100%"></div>
 <script>
+
     async function onFileChange() {
         showLoading(true);
         const exampleImage = $("[name=photo]").get(0).files[0];
@@ -273,14 +299,25 @@
         var armsType = $("select[name='armsType']").val()/1;//武器类型
         var suitType = $("select[name='suitType']").val()/1;//套装类型
 
+        //其他buff
+        var buffYj = $("#buff_yj").is(':checked');
+        var buffCd = $("#buff_cd").is(':checked');
+        var buffSy = $("#buff_sy").is(':checked');
+        var buffZs = $("#buff_zs").is(':checked');
+        var buffQy = $("#buff_qy").is(':checked');
+        var buffLs = $("#buff_ls").is(':checked');
+        var yjRe = $("#yjRe").val()/1;
+        var yjQLevel = $("#yjQLevel").val()/1;
+        var yjLife = $("#yjLife").val()/1;
+
         //基础属性（人物+武器）
         var hpBase = 14695;//生命值白字
         var armsBaseAtk = 0;
         switch (armsType) {
-            case 0: armsBaseAtk = 608;
-            case 1: armsBaseAtk = 454;
-            case 2: armsBaseAtk = 565;
-            case 3: armsBaseAtk = 401;
+            case 0: armsBaseAtk = 608;break;
+            case 1: armsBaseAtk = 454;break;
+            case 2: armsBaseAtk = 565;break;
+            case 3: armsBaseAtk = 401;break;
         }
         var atkBase = 251 + armsBaseAtk;//攻击力白字
         var criBase = 0.05;//角色基础暴击率
@@ -313,8 +350,14 @@
         //攻击力乘区
         var armsHp = armsType === 0 ? hpBase * hmHpRates[armsLevel-1] : 0;//武器增加生命值
         var hp = hpBase + hpEx + armsHp;//最大生命值
-        var armsAtk = armsType === 0 ? hp * (hmAtkRates[armsLevel-1] + hmHalfAtkRates[armsLevel-1]) : 0;//武器加攻（半血）
+        var armsAtk = armsType === 0 ? hp * (hmAtkRates[armsLevel-1]/* + hmHalfAtkRates[armsLevel-1]*/) : 0;//武器加攻
         var atk = atkBase + atkEx + armsAtk;
+        if(buffZs) {
+            atk += atkBase * 0.2;
+        }
+        if(buffQy) {
+            atk += atkBase * 0.2;
+        }
 
         //技能倍率乘区
         var skillRate1 = aRates1[aLevel-1];
@@ -330,24 +373,45 @@
         if(armsType === 2) {
             fixedDmgBuff += atk * lyFixedDmgRates[armsLevel-1];
         }
+        //云堇
+        if(buffYj) {
+            var yjReBase = 734;//云堇基础防御
+            if(yjLife >= 4) {
+                yjRe += yjReBase * 0.2;
+            }
+            var yjTeamRate = 0.075;//云堇天赋
+            var yjRate = yjQRate[yjQLevel-1] + yjTeamRate;
+            fixedDmgBuff += yjRe * yjRate;
+        }
 
         //增伤乘区
         var cupEleDmg = 0.583;//杯子
         var suitEleDmg = 0.5;//套装
         var armsEleDmg = 0;//武器增伤
         switch (armsType) {
-            case 0: armsEleDmg = 0;
-            case 1: armsEleDmg = 0.69;
-            case 2: armsEleDmg = 0.345;
-            case 3: armsEleDmg = byEleDmgRates[armsLevel-1];
+            case 0: armsEleDmg = 0;break;
+            case 1: armsEleDmg = 0.69;break;
+            case 2: armsEleDmg = 0.345;break;
+            case 3: armsEleDmg = byEleDmgRates[armsLevel-1];break;
         }
-        var eleDmgRate = 1 + cupEleDmg + suitEleDmg + armsEleDmg;
+        var teamEleDmg = buffSy ? 0.15 : 0;//双岩共鸣
+        var teammateEleDmg = 0;//队友增伤
+        if(buffYj && yjLife >= 2) {
+            teammateEleDmg += 0.15;
+        }
+        var eleDmgRate = 1 + cupEleDmg + suitEleDmg + armsEleDmg + teamEleDmg + teammateEleDmg;
 
         //爆伤乘区
         var criDmgRate = 1 + criDmg;
 
         //抗性乘区
         var eleResPercent = (eleRes - 20)/100;
+        if(buffCd) {
+            eleResPercent -= 0.4;
+        }
+        if(buffLs) {
+            eleResPercent -= 0.2;
+        }
         var eleResRate = 0;
         if(eleResPercent <=0) {
             eleResRate = 1 - eleResPercent/2;
@@ -417,6 +481,14 @@
         $("#except").text(except.toFixed(0));
 
     });
+
+    function showYjTab() {
+        if($("#buff_yj").is(':checked')) {
+            $("[name='yjAttr']").show();
+        }else{
+            $("[name='yjAttr']").hide();
+        }
+    }
 </script>
 <script>
     var opts = {
