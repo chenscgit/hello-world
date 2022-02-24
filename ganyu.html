@@ -94,6 +94,14 @@
         <td><input id="criDmgEx" size="10" placeholder="暴击伤害" value="135.3"/></td>
     </tr>
     <tr>
+        <td>元素充能：</td>
+        <td><input id="chargeEx" size="10" placeholder="元素充能" value="0"/></td>
+    </tr>
+    <tr>
+        <td>队伍能量：</td>
+        <td><input id="teamChargeEx" size="10" placeholder="队伍能量" value="260"/></td>
+    </tr>
+    <tr>
         <td>怪物等级：</td>
         <td><input id="monsterLevel" size="10" placeholder="怪物等级" value="88"/></td>
     </tr>
@@ -105,10 +113,10 @@
         <td>普攻等级：</td>
         <td><input id="aLevel" size="10" placeholder="普攻等级" value="10"/></td>
     </tr>
-<!--    <tr>-->
-<!--        <td>战技等级：</td>-->
-<!--        <td><input id="eLevel" size="10" placeholder="战技等级" value="13"/></td>-->
-<!--    </tr>-->
+    <tr>
+        <td>大招等级：</td>
+        <td><input id="qLevel" size="10" placeholder="大招等级" value="10"/></td>
+    </tr>
     <tr>
         <td>命座数量：</td>
         <td><input id="life" size="10" placeholder="命座数量" value="0"/></td>
@@ -118,11 +126,12 @@
         <td><input id="armsLevel" size="10" placeholder="武器精炼" value="1"/></td>
     </tr>
     <tr>
-                <td>武器类型：</td>
+        <td>武器类型：</td>
         <td>
             <select name="armsType" style="width: 100%">
                 <option value = "0" selected>阿莫斯</option>
                 <option value = "1">试作澹月</option>
+                <option value = "2">朦云之月</option>
             </select>
         </td>
     </tr>
@@ -132,6 +141,7 @@
             <select name="suitType" style="width: 100%">
                 <option value = "0" selected>4乐团</option>
                 <option value = "1">4冰风</option>
+                <option value = "2">4绝缘</option>
             </select>
         </td>
     </tr>
@@ -200,6 +210,21 @@
         <td>期望伤害(总): </td>
         <td id="re_except"></td>
     </tr>
+    <tr>
+        <td>大招</td>
+    </tr>
+    <tr>
+        <td>暴击伤害(单): </td>
+        <td id="qdps"></td>
+    </tr>
+    <tr>
+        <td>未暴击伤害(单): </td>
+        <td id="qdps_unCri"></td>
+    </tr>
+    <tr>
+        <td>期望伤害(单): </td>
+        <td id="qdps_except"></td>
+    </tr>
 </table>
 <div id="foo" style="width: 100%; height: 100%"></div>
 <script>
@@ -222,20 +247,21 @@
                 tessedit_char_whitelist: '0123456789.+%',
             });
 
-            var rec = {top: 0, left: 1300, width: 300, height: 850};
+            var rec = {top: 0, left: 1300, width: 300, height: 1080};
             var result = await worker.recognize(exampleImage, {
                 rectangle: rec,
             });
 
-            // for(var word in result.data.words) {
-            //     console.log(result.data.words[word].text);
-            // }
+            for(var word in result.data.words) {
+                console.log(result.data.words[word].text);
+            }
 
             $("#hpEx").val(result.data.words[0].text.replaceAll("+","").replaceAll("%","").replaceAll(" ","").replaceAll(".",""));
             $("#atkEx").val(result.data.words[1].text.replaceAll("+","").replaceAll("%","").replaceAll(" ","").replaceAll(".",""));
             $("#masterEx").val(result.data.words[3].text.replaceAll("+","").replaceAll("%","").replaceAll(" ","").replaceAll(".",""));
             $("#criEx").val(result.data.words[5].text.replaceAll("+","").replaceAll("%","").replaceAll(" ",""));
             $("#criDmgEx").val(result.data.words[6].text.replaceAll("+","").replaceAll("%","").replaceAll(" ",""));
+            $("#chargeEx").val(result.data.words[9].text.replaceAll("+","").replaceAll("%","").replaceAll(" ",""));
             showLoading(false);
             await worker.terminate();
         }
@@ -248,11 +274,14 @@
         var masterEx = $("#masterEx").val()/1;//精通
         var criEx = $("#criEx").val()/100;//暴击
         var criDmgEx = $("#criDmgEx").val()/100;//爆伤
+        var chargeEx = $("#chargeEx").val()/100;//充能
+        var teamChargeEx = $("#teamChargeEx").val();//队伍能量
 
         //其他信息
         var monsterLevel = $("#monsterLevel").val()/1;//怪物等级
         var eleRes = $("#eleRes").val()/1;//怪物抗性
         var aLevel = $("#aLevel").val()/1;//普攻等级
+        var qLevel = $("#qLevel").val()/1;//大招等级
         var life = $("#life").val()/1;//命座
         var armsLevel = $("#armsLevel").val()/1;//武器精炼
         var armsType = $("select[name='armsType']").val()/1;//武器类型，0-阿莫斯，1-试作
@@ -260,42 +289,86 @@
 
         //基础属性（人物+武器）
         //var hpBase = 9797;//生命值白字
-        var atkBase = armsType === 0 ? 943 : 845;//攻击力白字
+        var atkBase = 335;//攻击力白字
+        switch (armsType) {
+            case 0: atkBase += 608;break;
+            case 1: atkBase += 510;break;
+            case 2: atkBase += 565;break;
+        }
         var masterBase = 0;//角色基础精通
         var criBase = 0.05;//角色基础暴击率
         var criDmgBase = 0.884;//角色基础爆伤
-        var atkArms = armsType === 0 ? atkBase*0.496 : atkBase*0.413;//武器副属性攻击
+        var chargeBase = 1;//角色基础充能
+        var atkArms = 0;//武器副属性攻击
+        switch (armsType) {
+            case 0: atkArms += atkBase*0.496;break;
+            case 1: atkArms += atkBase*0.413;break;
+            case 2: atkArms += atkBase*0.276;break;
+        }
         var criSuit = suitType === 0 ? 0 : 0.2;//冰套按20暴击算
         var criInborn = 0.2;//天赋20暴击
         var masterSuit = suitType === 0 ? 80 : 0;//乐团2的精通不会显示在圣遗物面板上
+        var chargeSuit = suitType === 2 ? 0.2 : 0;//套装充能
+        var chargeArms = armsType === 2 ? 0.2: 0;//武器充能
 
         var master = masterBase + masterEx + masterSuit;//面板精通
         var cri = criBase + criEx + criInborn + criSuit;//面板暴击
         var criDmg = criDmgBase + criDmgEx;//面板爆伤
+        var charge = chargeBase + chargeEx + chargeSuit + chargeArms;//面板充能
 
         //阿莫斯增伤buff
         var amsEleDmgRates = [0.52, 0.65, 0.78, 0.91, 1.04];
         //试作攻击buff
         var szAtkRates = [0.36, 0.45, 0.54, 0.63, 0.72];
+        //朦云增伤buff
+        var myEleDmgRates = [Math.min(0.0012*teamChargeEx, 0.4),
+            Math.min(0.0015*teamChargeEx, 0.5),
+            Math.min(0.0018*teamChargeEx, 0.6),
+            Math.min(0.0021*teamChargeEx, 0.7),
+            Math.min(0.0024*teamChargeEx, 0.8)];
         //普攻技能倍率-重击第一段
         var a1Rates = [1.28, 1.38, 1.47, 1.60, 1.70, 1.79, 1.92, 2.05, 2.18, 2.30, 2.43];
         //普攻技能倍率-重击第二段
         var a2Rates = [2.18, 2.34, 2.50, 2.72, 2.88, 3.05, 3.26, 3.48, 3.70, 3.92, 4.13];
+        //大招倍率
+        var qRates = [0.70, 0.76, 0.81, 0.88, 0.93, 0.98, 1.05, 1.12, 1.19, 1.26, 1.34, 1.41, 1.49];
 
         //攻击力乘区
-        var armsAtk = armsType === 0 ? 0 : atkBase*szAtkRates[armsLevel-1];//武器加攻（试作）
+        var armsAtk = 0;//武器加攻（试作）
+        if(armsType === 1) {
+            armsAtk += atkBase*szAtkRates[armsLevel-1];
+        }
         var atk = atkBase + atkEx + atkArms + armsAtk;
 
         //技能倍率乘区
         var skillRate1 = a1Rates[aLevel-1];
         var skillRate2 = a2Rates[aLevel-1];
+        var skillRateQ = qRates[qLevel-1];
 
         //增伤乘区
         var cupEleDmg = 0.466;//杯子
         var inbornEleDmg = 0;//天赋
-        var suitEleDmg = suitType === 0 ? 0.35 : 0.15;//套装
-        var armsEleDmg = armsType === 0 ? amsEleDmgRates[armsLevel-1] : 0;//武器增伤
-        var eleDmgRate = 1 + cupEleDmg + inbornEleDmg + suitEleDmg + armsEleDmg;
+        var suitEleDmg = 0;//套装
+        switch (suitType) {
+            case 0: suitEleDmg += 0.35;break;
+            case 1: suitEleDmg += 0.15;break;
+            case 2: suitEleDmg += 0;break;
+        }
+        var suitEleDmgQ = suitEleDmg;
+        if(suitType === 2) {
+            suitEleDmgQ += Math.min(0.25*charge, 0.75);
+        }
+        var armsEleDmgA = 0;//武器增伤
+        if(armsType === 0) {
+            armsEleDmgA += amsEleDmgRates[armsLevel-1];
+        }
+        var armsEleDmgQ = 0;//武器增伤
+        if(armsType === 2) {
+            armsEleDmgQ += myEleDmgRates[armsLevel-1];
+        }
+        var eleDmgRate = 1 + cupEleDmg + inbornEleDmg + suitEleDmg + armsEleDmgA;
+        var eleDmgRateQ = 1 + cupEleDmg + inbornEleDmg + suitEleDmgQ + armsEleDmgQ;
+
 
         //爆伤乘区
         var criDmgRate = 1 + criDmg;
@@ -331,6 +404,7 @@
         var dps1 = atk * skillRate1 * eleDmgRate * eleResRate * defRate * criDmgRate;
         var dps2 = atk * skillRate2 * eleDmgRate * eleResRate * defRate * criDmgRate;
         var dps = dps1 + dps2;
+        var qdps = atk * skillRateQ * eleDmgRateQ * eleResRate * defRate * criDmgRate;
         //反应伤害
         var re_dps1 = dps1 * reactionRate;
         var re_dps2 = dps2 * reactionRate;
@@ -338,6 +412,7 @@
         //期望伤害
         var except = dps / (1 + criDmg) * (1 + criDmg * cri);
         var re_except = re_dps / (1 + criDmg) * (1 + criDmg * cri);
+        var qdps_except = qdps / (1 + criDmg) * (1 + criDmg * cri);
         //未暴击伤害
         var unCri1 = dps1 / criDmgRate;
         var unCri2 = dps2 / criDmgRate;
@@ -345,6 +420,7 @@
         var re_unCri1 = re_dps1 / criDmgRate;
         var re_unCri2 = re_dps2 / criDmgRate;
         var re_unCri = re_dps / criDmgRate;
+        var qdps_unCri = qdps / criDmgRate;
 
         $("#dps1").text(dps1.toFixed(0));
         $("#dps2").text(dps2.toFixed(0));
@@ -365,6 +441,10 @@
         $("#re_unCri").text(re_unCri.toFixed(0));
 
         $("#re_except").text(re_except.toFixed(0));
+
+        $("#qdps").text(qdps.toFixed(0));
+        $("#qdps_unCri").text(qdps_unCri.toFixed(0));
+        $("#qdps_except").text(qdps_except.toFixed(0));
     });
 </script>
 <script>
