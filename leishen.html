@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=2.0, user-scalable=yes" />
+    <title>计算器</title>
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.1/dist/tesseract.min.js"></script>
+    <script type="text/javascript" src="spin.js" ></script>
+    <style>
+        td{padding:3px;font-size: 20px}
+        input{font-size: 20px}
+        #foo {
+            position: fixed;
+            left: 0;
+            top: 0;
+            _position: absolute;
+            width: 100%;
+            background: #000;
+            opacity: 0.5;
+            filter: alpha(opacity=50);
+            z-index: 999;
+            display: none;
+        }
+        @keyframes spinner-line-fade-more {
+            0%, 100% {
+                opacity: 0; /* minimum opacity */
+            }
+            1% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes spinner-line-fade-quick {
+            0%, 39%, 100% {
+                opacity: 0.25; /* minimum opacity */
+            }
+            40% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes spinner-line-fade-default {
+            0%, 100% {
+                opacity: 0.22; /* minimum opacity */
+            }
+            1% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes spinner-line-shrink {
+            0%, 25%, 100% {
+                /* minimum scale and opacity */
+                transform: scale(0.5);
+                opacity: 0.25;
+            }
+            26% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+<h2 align="center">雷神伤害计算(填圣遗物面板)</h2>
+<table style="margin: auto">
+    <tr>
+        <td>
+            <label style="font-size: 12px;color: blue">图像识别(手机)<input name="photo" type="file" size="30" width="250" style="line-height:0;display:none" onchange="onFileChange(0)"></label>
+        </td>
+        <td>
+            <!--            <label style="font-size: 12px;color: blue">图像识别(电脑)<input name="photo" type="file" size="30" width="250" style="line-height:0;display:none" onchange="onFileChange(1)"></label>-->
+        </td>
+    </tr>
+    <!--    <tr>-->
+    <!--        <td>生命值：</td>-->
+    <!--        <td><input id="hpEx" size="10" placeholder="生命值" value="15518"/></td>-->
+    <!--    </tr>-->
+    <tr>
+        <td>攻击力：</td>
+        <td><input id="atkEx" size="10" placeholder="攻击力" value="880"/></td>
+    </tr>
+    <tr>
+        <td>元素精通：</td>
+        <td><input id="masterEx" size="10" placeholder="元素精通" value="0"/></td>
+    </tr>
+    <tr>
+        <td>暴击率：</td>
+        <td><input id="criEx" size="10" placeholder="暴击率" value="46.3"/></td>
+    </tr>
+    <tr>
+        <td>暴击伤害：</td>
+        <td><input id="criDmgEx" size="10" placeholder="暴击伤害" value="135.3"/></td>
+    </tr>
+    <tr>
+        <td>元素充能：</td>
+        <td><input id="chargeEx" size="10" placeholder="元素充能" value="0"/></td>
+    </tr>
+    <tr>
+        <td>愿力层数：</td>
+        <td><input id="will" size="10" placeholder="愿力层数" value="60"/></td>
+    </tr>
+    <tr>
+        <td>队伍能量：</td>
+        <td><input id="teamChargeEx" size="10" placeholder="队伍能量" value="310"/></td>
+    </tr>
+    <tr>
+        <td>怪物等级：</td>
+        <td><input id="monsterLevel" size="10" placeholder="怪物等级" value="90"/></td>
+    </tr>
+    <tr>
+        <td>怪物抗性：</td>
+        <td><input id="eleRes" size="10" placeholder="怪物抗性" value="10"/></td>
+    </tr>
+    <tr>
+        <td>战技等级：</td>
+        <td><input id="eLevel" size="10" placeholder="战技等级" value="10"/></td>
+    </tr>
+    <tr>
+        <td>大招等级：</td>
+        <td><input id="qLevel" size="10" placeholder="大招等级" value="10"/></td>
+    </tr>
+    <tr>
+        <td>命座数量：</td>
+        <td><input id="life" size="10" placeholder="命座数量" value="0"/></td>
+    </tr>
+    <tr>
+        <td>武器精炼：</td>
+        <td><input id="armsLevel" size="10" placeholder="武器精炼" value="1"/></td>
+    </tr>
+    <tr>
+        <td>武器类型：</td>
+        <td>
+            <select name="armsType" style="width: 100%">
+                <option value = "0" selected>薙草之稻光</option>
+                <option value = "1">天空之脊</option>
+                <option value = "2">渔获</option>
+                <option value = "3">断浪长鳍</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>套装类型：</td>
+        <td>
+            <select name="suitType" style="width: 100%">
+                <option value = "0" selected>4绝缘</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>其他</td>
+        <td>
+            <input type="checkbox" id="buff_lb" value="0" checked/>雷杯
+            <input type="checkbox" id="buff_sh" value="0"/>双火
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2"><button id="ok" style="margin:20px 0px;padding:10px;width:100%">计算</button></td>
+    </tr>
+    <tr>
+        <td>暴击伤害: </td>
+        <td id="dps"></td>
+    </tr>
+    <tr>
+        <td>未暴击伤害: </td>
+        <td id="dps_unCri"></td>
+    </tr>
+    <tr>
+        <td>期望伤害: </td>
+        <td id="except"></td>
+    </tr>
+</table>
+<div id="foo" style="width: 100%; height: 100%"></div>
+<script>
+    async function onFileChange() {
+        showLoading(true);
+        const exampleImage = $("[name=photo]").get(0).files[0];
+
+        const worker = Tesseract.createWorker({
+            langPath: '.',
+            logger: m => console.log(m)
+        });
+        Tesseract.setLogging(true);
+        work();
+
+        async function work() {
+            await worker.load();
+            await worker.loadLanguage('eng');
+            await worker.initialize('eng');
+            await worker.setParameters({
+                tessedit_char_whitelist: '0123456789.+%',
+            });
+
+            var rec = {top: 0, left: 1300, width: 300, height: 1080};
+            var result = await worker.recognize(exampleImage, {
+                rectangle: rec,
+            });
+
+            for(var word in result.data.words) {
+                console.log(result.data.words[word].text);
+            }
+
+            $("#hpEx").val(result.data.words[0].text.replaceAll("+","").replaceAll("%","").replaceAll(" ","").replaceAll(".",""));
+            $("#atkEx").val(result.data.words[1].text.replaceAll("+","").replaceAll("%","").replaceAll(" ","").replaceAll(".",""));
+            $("#masterEx").val(result.data.words[3].text.replaceAll("+","").replaceAll("%","").replaceAll(" ","").replaceAll(".",""));
+            $("#criEx").val(result.data.words[5].text.replaceAll("+","").replaceAll("%","").replaceAll(" ",""));
+            $("#criDmgEx").val(result.data.words[6].text.replaceAll("+","").replaceAll("%","").replaceAll(" ",""));
+            $("#chargeEx").val(result.data.words[9].text.replaceAll("+","").replaceAll("%","").replaceAll(" ",""));
+            showLoading(false);
+            await worker.terminate();
+        }
+    }
+
+    $("#ok").on("click", function (event) {
+        //圣遗物属性
+        //var hpEx = $("#hpEx").val()/1;//生命
+        var atkEx = $("#atkEx").val()/1;//攻击
+        var masterEx = $("#masterEx").val()/1;//精通
+        var criEx = $("#criEx").val()/100;//暴击
+        var criDmgEx = $("#criDmgEx").val()/100;//爆伤
+        var chargeEx = $("#chargeEx").val()/100;//充能
+        var teamChargeEx = $("#teamChargeEx").val()/1;//队伍能量
+        var will = $("#will").val()/1;//队伍能量
+
+        //其他信息
+        var monsterLevel = $("#monsterLevel").val()/1;//怪物等级
+        var eleRes = $("#eleRes").val()/1;//怪物抗性
+        var eLevel = $("#eLevel").val()/1;//战技等级
+        var qLevel = $("#qLevel").val()/1;//大招等级
+        var life = $("#life").val()/1;//命座
+        var armsLevel = $("#armsLevel").val()/1;//武器精炼
+        var armsType = $("select[name='armsType']").val()/1;//武器类型
+        var suitType = $("select[name='suitType']").val()/1;//套装类型
+        var buffLb = $("#buff_lb").is(':checked');
+        var buffSh = $("#buff_sh").is(':checked');
+
+        //基础属性（人物+武器）
+        //var hpBase = 9797;//生命值白字
+        var atkBase = 337;//攻击力白字
+        switch (armsType) {
+            case 0: atkBase += 608;break;
+            case 1: atkBase += 674;break;
+            case 2: atkBase += 510;break;
+            case 3: atkBase += 620;break;
+        }
+        var masterBase = 0;//角色基础精通
+        var criBase = 0.05;//角色基础暴击率
+        var criDmgBase = 0.5;//角色基础爆伤
+        var chargeBase = 1.32;//角色基础充能
+        var atkArms = 0;//武器副属性攻击
+        switch (armsType) {
+            case 0: atkArms += 0;break;
+            case 1: atkArms += 0;break;
+            case 2: atkArms += 0;break;
+            case 3: atkArms += atkBase*0.138;break;
+        }
+        var chargeSuit = suitType === 0 ? 0.2 : 0;//套装充能
+        var chargeArms = 0;//武器充能
+        switch (armsType) {
+            case 0: chargeArms += 0.496;break;
+            case 1: chargeArms += 0.368;break;
+            case 2: chargeArms += 0.459;break;
+            case 3: chargeArms += 0;break;
+        }
+
+        //var master = masterBase + masterEx + masterSuit;//面板精通
+        var cri = criBase + criEx;//面板暴击
+        var criDmg = criDmgBase + criDmgEx;//面板爆伤
+        var charge = chargeBase + chargeEx + chargeSuit + chargeArms;//面板充能
+
+        //稻光增伤buff
+        var dgChargeRates = [0.3, 0.35, 0.4, 0.45, 0.5];
+        var dgEleDmgRates = [Math.min(0.28*(charge+0.3-1), 0.8),
+            Math.min(0.35*(charge+0.35-1), 0.9),
+            Math.min(0.42*(charge+0.4-1), 1),
+            Math.min(0.49*(charge+0.45-1), 1.1),
+            Math.min(0.56*(charge+0.5-1), 1.2)];
+        //天空buff
+        var tkCriRates = [0.08, 0.1, 0.12, 0.14, 0.16];
+        //渔获buff
+        var yhEleDmgRates = [0.16, 0.20, 0.24, 0.28, 0.32];
+        var yhCriRates = [0.06, 0.075, 0.09, 0.105, 0.12];
+        //断浪增伤buff
+        var dlEleDmgRates = [Math.min(0.0012*teamChargeEx, 0.4),
+            Math.min(0.0015*teamChargeEx, 0.5),
+            Math.min(0.0018*teamChargeEx, 0.6),
+            Math.min(0.0021*teamChargeEx, 0.7),
+            Math.min(0.0024*teamChargeEx, 0.8)];
+        //e增伤倍率
+        var power = 90;
+        var eEleDmgRates = [0.0022*power, 0.0023*power, 0.0024*power, 0.0025*power, 0.0026*power, 0.0027*power,
+            0.0028*power, 0.0029*power, 0.0030*power, 0.0030*power, 0.0030*power, 0.0030*power, 0.0030*power];
+        //q倍率
+        var qRates = [4.01+0.0398*will, 4.31+0.0418*will, 4.61+0.0447*will, 5.01+0.0486*will, 5.31+0.0515*will,
+            5.61+0.0544*will, 6.01+0.0583*will, 6.41+0.0622*will, 6.81+0.0661*will, 7.21+0.07*will,
+            7.62+0.0739*will, 8.02+0.0778*will, 8.52+0.0826*will];
+        //q攻击buff
+        var qAtkRates = [0.0073*will, 0.0078*will, 0.0084*will, 0.0091*will, 0.0096*will, 0.0102*will, 0.0109*will,
+            0.0116*will, 0.0123*will, 0.0131*will, 0.0138*will, 0.0145*will, 0.0154*will];
+
+        //暴击率
+        switch (armsType) {
+            case 0: cri += 0;break;
+            case 1: cri += tkCriRates[armsLevel-1];break;
+            case 2: cri += yhCriRates[armsLevel-1];break;
+            case 3: cri += 0;break;
+        }
+
+        //攻击力乘区
+        var skillAtk = atkBase * qAtkRates[qLevel-1];
+        var teamAtkBuff = buffSh ? atkBase * 0.25 : 0;
+        var atk = atkBase + atkEx + atkArms + skillAtk + teamAtkBuff;
+        console.log("atk:" + atk);
+
+        //技能倍率乘区
+        var skillRateQ = qRates[qLevel-1];
+
+        //增伤乘区
+        var cupEleDmg = buffLb ? 0.466 : 0;//杯子
+        if(armsType === 0) {
+            charge += dgChargeRates[armsLevel-1];
+        }
+        var inbornEleDmg = 0.4 * (charge - 1);//天赋
+        var skillEleDmg = eEleDmgRates[eLevel-1];
+        var suitEleDmg = 0;//套装
+        if(suitType === 2) {
+            suitEleDmg += Math.min(0.25*charge, 0.75);
+        }
+        var armsEleDmg = 0;//武器增伤
+        switch (armsType) {
+            case 0: armsEleDmg += dgEleDmgRates[armsLevel-1];break;
+            case 1: armsEleDmg += 0;break;
+            case 2: armsEleDmg += yhEleDmgRates[armsLevel-1];break;
+            case 3: armsEleDmg += dlEleDmgRates[armsLevel-1];break;
+        }
+        var eleDmgRate = 1 + cupEleDmg + inbornEleDmg + skillEleDmg + suitEleDmg + armsEleDmg;
+
+
+        //爆伤乘区
+        var criDmgRate = 1 + criDmg;
+
+        //反应乘区,冰打火融化1.5倍
+        // var suitMaster = suitType === 0 ? 0 : 0;
+        // var masterRate = 278 * master / (master + 1400) / 100;//精通对增幅反应的加成
+        // var reactionRate = 1.5 * (1 + suitMaster + masterRate)
+
+        //抗性乘区
+        var eleResPercent = eleRes/100;
+        if(life >= 1) {
+            eleResPercent -= 0.15;
+        }
+        var eleResRate = 0;
+        if(eleResPercent <=0) {
+            eleResRate = 1 - eleResPercent/2;
+        } else if (eleResPercent > 0 && eleResPercent < 75) {
+            eleResRate = 1 - eleResPercent;
+        } else {
+            eleResRate = 1/(4*eleResPercent + 1);
+        }
+
+        //防御乘区
+        var playerLevel = 90;//玩家等级
+        var monsterDef = monsterLevel * 5 + 500;//怪物防御力
+        var defAddBuff = 0;//增防
+        var defSubBuff = 0;//减防
+        var defIgnBuff = 0;//无视
+        var defRate = (playerLevel + 100) * 5 / ((playerLevel + 100) * 5 + monsterDef * ( 1 + defAddBuff - defSubBuff) * (1 + defIgnBuff));
+
+        //暴击伤害
+        var dps = atk * skillRateQ * eleDmgRate * eleResRate * defRate * criDmgRate;
+        //未暴击伤害
+        var dps_unCri = dps / criDmgRate;
+        //期望伤害
+        var except = dps / (1 + criDmg) * (1 + criDmg * cri);
+
+        $("#dps").text(dps.toFixed(0));
+        $("#dps_unCri").text(dps_unCri.toFixed(0));
+        $("#except").text(except.toFixed(0));
+    });
+</script>
+<script>
+    var opts = {
+        lines: 9, // The number of lines to draw
+        length: 0, // The length of each line
+        width: 10, // The line thickness
+        radius: 15, // The radius of the inner circle
+        corners: 1, // Corner roundness (0..1)
+        rotate: 0, // The rotation offset
+        color: '#fff', // #rgb or #rrggbb
+        speed: 1, // Rounds per second
+        trail: 60, // Afterglow percentage
+        shadow: false, // Whether to render a shadow
+        hwaccel: false, // Whether to use hardware acceleration
+        className: 'spin', // The CSS class to assign to the spinner
+        zIndex: 2e9, // The z-index (defaults to 2000000000)
+        top: '50%', // Top position relative to parent in px
+        left: '50%' // Left position relative to parent in px
+    };
+    var spinner = new Spinner(opts);
+    //显示与隐藏加载动画
+    function showLoading(result) {
+        var spinContainer = document.getElementById("foo");
+        if (result) {undefined
+            var target = $(spinContainer).get(0);
+            spinner.spin(target);
+            spinContainer.style.height = document.documentElement.clientHeight + "px";
+            $(spinContainer).show();
+        } else {undefined
+            spinner.spin();
+            $(spinContainer).hide();
+        }
+    }
+</script>
+</body>
+</html>
