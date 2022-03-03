@@ -73,13 +73,13 @@
             <!--            <label style="font-size: 12px;color: blue">图像识别(电脑)<input name="photo" type="file" size="30" width="250" style="line-height:0;display:none" onchange="onFileChange(1)"></label>-->
         </td>
     </tr>
-    <!--    <tr>-->
-    <!--        <td>生命值：</td>-->
-    <!--        <td><input id="hpEx" size="10" placeholder="生命值" value="15518"/></td>-->
-    <!--    </tr>-->
+        <tr>
+            <td>生命值：</td>
+            <td><input id="hpEx" size="10" placeholder="生命值" value="7200"/></td>
+        </tr>
     <tr>
         <td>攻击力：</td>
-        <td><input id="atkEx" size="10" placeholder="攻击力" value="880"/></td>
+        <td><input id="atkEx" size="10" placeholder="攻击力" value="900"/></td>
     </tr>
     <tr>
         <td>元素精通：</td>
@@ -87,15 +87,15 @@
     </tr>
     <tr>
         <td>暴击率：</td>
-        <td><input id="criEx" size="10" placeholder="暴击率" value="46.3"/></td>
+        <td><input id="criEx" size="10" placeholder="暴击率" value="45"/></td>
     </tr>
     <tr>
         <td>暴击伤害：</td>
-        <td><input id="criDmgEx" size="10" placeholder="暴击伤害" value="135.3"/></td>
+        <td><input id="criDmgEx" size="10" placeholder="暴击伤害" value="100"/></td>
     </tr>
     <tr>
         <td>元素充能：</td>
-        <td><input id="chargeEx" size="10" placeholder="元素充能" value="0"/></td>
+        <td><input id="chargeEx" size="10" placeholder="元素充能" value="70"/></td>
     </tr>
     <tr>
         <td>愿力层数：</td>
@@ -137,6 +137,7 @@
                 <option value = "1">天空之脊</option>
                 <option value = "2">渔获</option>
                 <option value = "3">断浪长鳍</option>
+                <option value = "4">护摩之杖</option>
             </select>
         </td>
     </tr>
@@ -214,7 +215,7 @@
 
     $("#ok").on("click", function (event) {
         //圣遗物属性
-        //var hpEx = $("#hpEx").val()/1;//生命
+        var hpEx = $("#hpEx").val()/1;//生命
         var atkEx = $("#atkEx").val()/1;//攻击
         var masterEx = $("#masterEx").val()/1;//精通
         var criEx = $("#criEx").val()/100;//暴击
@@ -236,13 +237,14 @@
         var buffSh = $("#buff_sh").is(':checked');
 
         //基础属性（人物+武器）
-        //var hpBase = 9797;//生命值白字
+        var hpBase = 12907;//生命值白字
         var atkBase = 337;//攻击力白字
         switch (armsType) {
             case 0: atkBase += 608;break;
             case 1: atkBase += 674;break;
             case 2: atkBase += 510;break;
             case 3: atkBase += 620;break;
+            case 4: atkBase += 608;break;
         }
         var masterBase = 0;//角色基础精通
         var criBase = 0.05;//角色基础暴击率
@@ -250,9 +252,6 @@
         var chargeBase = 1.32;//角色基础充能
         var atkArms = 0;//武器副属性攻击
         switch (armsType) {
-            case 0: atkArms += 0;break;
-            case 1: atkArms += 0;break;
-            case 2: atkArms += 0;break;
             case 3: atkArms += atkBase*0.138;break;
         }
         var chargeSuit = suitType === 0 ? 0.2 : 0;//套装充能
@@ -261,12 +260,12 @@
             case 0: chargeArms += 0.496;break;
             case 1: chargeArms += 0.368;break;
             case 2: chargeArms += 0.459;break;
-            case 3: chargeArms += 0;break;
         }
 
         //var master = masterBase + masterEx + masterSuit;//面板精通
         var cri = criBase + criEx;//面板暴击
-        var criDmg = criDmgBase + criDmgEx;//面板爆伤
+        var criDmgArms = armsType === 4 ? 0.662 : 0;//武器爆伤
+        var criDmg = criDmgBase + criDmgEx + criDmgArms;//面板爆伤
         var charge = chargeBase + chargeEx + chargeSuit + chargeArms;//面板充能
 
         //稻光增伤buff
@@ -287,6 +286,12 @@
             Math.min(0.0018*teamChargeEx, 0.6),
             Math.min(0.0021*teamChargeEx, 0.7),
             Math.min(0.0024*teamChargeEx, 0.8)];
+        //护摩生命buff
+        var hmHpRates = [0.20, 0.25, 0.30, 0.35, 0.40];
+        //护摩满血攻击buff
+        var hmAtkRates = [0.008, 0.01, 0.012, 0.014, 0.016];
+        //护摩半血攻击buff
+        var hmHalfAtkRates = [0.01, 0.012, 0.014, 0.016, 0.018];
         //e增伤倍率
         var power = 90;
         var eEleDmgRates = [0.0022*power, 0.0023*power, 0.0024*power, 0.0025*power, 0.0026*power, 0.0027*power,
@@ -310,11 +315,19 @@
         //攻击力乘区
         var skillAtk = atkBase * qAtkRates[qLevel-1];
         var teamAtkBuff = buffSh ? atkBase * 0.25 : 0;
-        var atk = atkBase + atkEx + atkArms + skillAtk + teamAtkBuff;
+        var cupAtk = buffLb ? 0 : 0 /*atkBase * 0.466*/;
+        var armsAtk = 0;//武器加攻
+        if(armsType === 4) {
+            var armsHp = armsType === 0 ? hpBase * hmHpRates[armsLevel-1] : 0;//武器增加生命值
+            var hp = hpBase + hpEx + armsHp;//最大生命值
+            armsAtk = hp * (hmAtkRates[armsLevel-1]/* + hmHalfAtkRates[armsLevel-1]*/);
+        }
+        var atk = atkBase + atkEx + atkArms + skillAtk + teamAtkBuff + cupAtk + armsAtk;
         console.log("atk:" + atk);
 
         //技能倍率乘区
         var skillRateQ = qRates[qLevel-1];
+        console.log("skillRateQ:" + skillRateQ);
 
         //增伤乘区
         var cupEleDmg = buffLb ? 0.466 : 0;//杯子
@@ -330,17 +343,18 @@
         var armsEleDmg = 0;//武器增伤
         switch (armsType) {
             case 0: armsEleDmg += dgEleDmgRates[armsLevel-1];break;
-            case 1: armsEleDmg += 0;break;
             case 2: armsEleDmg += yhEleDmgRates[armsLevel-1];break;
             case 3: armsEleDmg += dlEleDmgRates[armsLevel-1];break;
         }
         var eleDmgRate = 1 + cupEleDmg + inbornEleDmg + skillEleDmg + suitEleDmg + armsEleDmg;
-
+        console.log("charge:" + charge);
+        console.log("eleDmgRate:" + eleDmgRate);
 
         //爆伤乘区
         var criDmgRate = 1 + criDmg;
+        console.log("criDmgRate:" + criDmgRate);
 
-        //反应乘区,冰打火融化1.5倍
+        //反应乘区
         // var suitMaster = suitType === 0 ? 0 : 0;
         // var masterRate = 278 * master / (master + 1400) / 100;//精通对增幅反应的加成
         // var reactionRate = 1.5 * (1 + suitMaster + masterRate)
@@ -358,6 +372,7 @@
         } else {
             eleResRate = 1/(4*eleResPercent + 1);
         }
+        console.log("eleResRate:" + eleResRate);
 
         //防御乘区
         var playerLevel = 90;//玩家等级
@@ -365,7 +380,11 @@
         var defAddBuff = 0;//增防
         var defSubBuff = 0;//减防
         var defIgnBuff = 0;//无视
-        var defRate = (playerLevel + 100) * 5 / ((playerLevel + 100) * 5 + monsterDef * ( 1 + defAddBuff - defSubBuff) * (1 + defIgnBuff));
+        if(life >= 2) {
+            defIgnBuff += 0.6;
+        }
+        var defRate = (playerLevel + 100) * 5 / ((playerLevel + 100) * 5 + monsterDef * ( 1 + defAddBuff - defSubBuff) * (1 - defIgnBuff));
+        console.log("defRate:" + defRate);
 
         //暴击伤害
         var dps = atk * skillRateQ * eleDmgRate * eleResRate * defRate * criDmgRate;
