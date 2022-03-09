@@ -67,7 +67,7 @@
 <table style="margin: auto">
     <tr>
         <td>
-            <label style="font-size: 12px;color: blue">图像识别(手机)<input name="photo" type="file" size="30" width="250" style="line-height:0;display:none" onchange="onFileChange(0)"></label>
+<!--            <label style="font-size: 12px;color: blue">图像识别(手机)<input name="photo" type="file" size="30" width="250" style="line-height:0;display:none" onchange="onFileChange(0)"></label>-->
         </td>
         <td>
             <!--            <label style="font-size: 12px;color: blue">图像识别(电脑)<input name="photo" type="file" size="30" width="250" style="line-height:0;display:none" onchange="onFileChange(1)"></label>-->
@@ -75,27 +75,27 @@
     </tr>
         <tr>
             <td>生命值：</td>
-            <td><input id="hpEx" size="10" placeholder="生命值" value="7200"/></td>
+            <td><input id="hpEx" size="10" placeholder="生命值" value="7335"/></td>
         </tr>
     <tr>
         <td>攻击力：</td>
-        <td><input id="atkEx" size="10" placeholder="攻击力" value="900"/></td>
+        <td><input id="atkEx" size="10" placeholder="攻击力" value="595"/></td>
     </tr>
     <tr>
         <td>元素精通：</td>
-        <td><input id="masterEx" size="10" placeholder="元素精通" value="0"/></td>
+        <td><input id="masterEx" size="10" placeholder="元素精通" value="44"/></td>
     </tr>
     <tr>
         <td>暴击率：</td>
-        <td><input id="criEx" size="10" placeholder="暴击率" value="45"/></td>
+        <td><input id="criEx" size="10" placeholder="暴击率" value="63.8"/></td>
     </tr>
     <tr>
         <td>暴击伤害：</td>
-        <td><input id="criDmgEx" size="10" placeholder="暴击伤害" value="100"/></td>
+        <td><input id="criDmgEx" size="10" placeholder="暴击伤害" value="61.4"/></td>
     </tr>
     <tr>
         <td>元素充能：</td>
-        <td><input id="chargeEx" size="10" placeholder="元素充能" value="70"/></td>
+        <td><input id="chargeEx" size="10" placeholder="元素充能" value="68.6"/></td>
     </tr>
     <tr>
         <td>愿力层数：</td>
@@ -103,7 +103,7 @@
     </tr>
     <tr>
         <td>队伍能量：</td>
-        <td><input id="teamChargeEx" size="10" placeholder="队伍能量" value="310"/></td>
+        <td><input id="teamChargeEx" size="10" placeholder="队伍能量" value="290"/></td>
     </tr>
     <tr>
         <td>怪物等级：</td>
@@ -123,7 +123,7 @@
     </tr>
     <tr>
         <td>命座数量：</td>
-        <td><input id="life" size="10" placeholder="命座数量" value="0"/></td>
+        <td><input id="life" size="10" placeholder="命座数量" value="2"/></td>
     </tr>
     <tr>
         <td>武器精炼：</td>
@@ -153,7 +153,16 @@
         <td>其他</td>
         <td>
             <input type="checkbox" id="buff_lb" value="0" checked/>雷杯
-            <input type="checkbox" id="buff_sh" value="0"/>双火
+            <input type="checkbox" id="buff_gb" value="0"/>攻击杯
+            <br/>
+            <input type="checkbox" id="buff_jt" value="0"/>九条
+            <input type="checkbox" id="buff_bnt" value="0"/>班尼特
+            <br/>
+            <input type="checkbox" id="buff_wy" value="0"/>万叶
+            <input type="checkbox" id="buff_st" value="0"/>砂糖
+            <br/>
+            <input type="checkbox" id="buff_zs" value="0"/>宗室
+            <input type="checkbox" id="buff_zm" value="0"/>终末
         </td>
     </tr>
     <tr>
@@ -194,9 +203,9 @@
             });
 
             var rec = {top: 0, left: 1300, width: 300, height: 1080};
-            var result = await worker.recognize(exampleImage, {
+            var result = await worker.recognize(exampleImage/*, {
                 rectangle: rec,
-            });
+            }*/);
 
             for(var word in result.data.words) {
                 console.log(result.data.words[word].text);
@@ -234,8 +243,13 @@
         var armsType = $("select[name='armsType']").val()/1;//武器类型
         var suitType = $("select[name='suitType']").val()/1;//套装类型
         var buffLb = $("#buff_lb").is(':checked');
-        var buffSh = $("#buff_sh").is(':checked');
-
+        var buffGb = $("#buff_gb").is(':checked');
+        var buffJt = $("#buff_jt").is(':checked');
+        var buffBnt = $("#buff_bnt").is(':checked');
+        var buffWy = $("#buff_wy").is(':checked');
+        var buffSt = $("#buff_st").is(':checked');
+        var buffZs = $("#buff_zs").is(':checked');
+        var buffZm = $("#buff_zm").is(':checked');
         //基础属性（人物+武器）
         var hpBase = 12907;//生命值白字
         var atkBase = 337;//攻击力白字
@@ -270,7 +284,7 @@
 
         //稻光增伤buff
         var dgChargeRates = [0.3, 0.35, 0.4, 0.45, 0.5];
-        var dgEleDmgRates = [Math.min(0.28*(charge+0.3-1), 0.8),
+        var dgAtkRates = [Math.min(0.28*(charge+0.3-1), 0.8),
             Math.min(0.35*(charge+0.35-1), 0.9),
             Math.min(0.42*(charge+0.4-1), 1),
             Math.min(0.49*(charge+0.45-1), 1.1),
@@ -300,9 +314,9 @@
         var qRates = [4.01+0.0398*will, 4.31+0.0418*will, 4.61+0.0447*will, 5.01+0.0486*will, 5.31+0.0515*will,
             5.61+0.0544*will, 6.01+0.0583*will, 6.41+0.0622*will, 6.81+0.0661*will, 7.21+0.07*will,
             7.62+0.0739*will, 8.02+0.0778*will, 8.52+0.0826*will];
-        //q攻击buff
-        var qAtkRates = [0.0073*will, 0.0078*will, 0.0084*will, 0.0091*will, 0.0096*will, 0.0102*will, 0.0109*will,
-            0.0116*will, 0.0123*will, 0.0131*will, 0.0138*will, 0.0145*will, 0.0154*will];
+        //q普攻buff
+        // var qARates = [0.0073*will, 0.0078*will, 0.0084*will, 0.0091*will, 0.0096*will, 0.0102*will, 0.0109*will,
+        //     0.0116*will, 0.0123*will, 0.0131*will, 0.0138*will, 0.0145*will, 0.0154*will];
 
         //暴击率
         switch (armsType) {
@@ -313,21 +327,35 @@
         }
 
         //攻击力乘区
-        var skillAtk = atkBase * qAtkRates[qLevel-1];
-        var teamAtkBuff = buffSh ? atkBase * 0.25 : 0;
-        var cupAtk = buffLb ? 0 : 0 /*atkBase * 0.466*/;
+        var teamAtkBuff = 0;
+        if(buffJt) {
+            teamAtkBuff += (195 + 608) * 0.86;
+        }
+        if(buffBnt) {
+            teamAtkBuff += (191 + 608) * 1.32;
+        }
+        if(buffZs) {
+            teamAtkBuff += atkBase * 0.2;
+        }
+        if(buffZm) {
+            teamAtkBuff += atkBase * 0.2;
+        }
+        var cupAtk = buffGb ? atkBase * 0.466 : 0;
         var armsAtk = 0;//武器加攻
+        if(armsType === 0) {
+            armsAtk += atkBase * dgAtkRates[armsLevel-1];
+        }
         if(armsType === 4) {
             var armsHp = armsType === 0 ? hpBase * hmHpRates[armsLevel-1] : 0;//武器增加生命值
             var hp = hpBase + hpEx + armsHp;//最大生命值
             armsAtk = hp * (hmAtkRates[armsLevel-1]/* + hmHalfAtkRates[armsLevel-1]*/);
         }
-        var atk = atkBase + atkEx + atkArms + skillAtk + teamAtkBuff + cupAtk + armsAtk;
-        console.log("atk:" + atk);
+        var atk = atkBase + atkEx + atkArms + teamAtkBuff + cupAtk + armsAtk;
+        console.log("攻击力:" + atk);
 
         //技能倍率乘区
         var skillRateQ = qRates[qLevel-1];
-        console.log("skillRateQ:" + skillRateQ);
+        console.log("技能倍率:" + skillRateQ);
 
         //增伤乘区
         var cupEleDmg = buffLb ? 0.466 : 0;//杯子
@@ -342,17 +370,26 @@
         }
         var armsEleDmg = 0;//武器增伤
         switch (armsType) {
-            case 0: armsEleDmg += dgEleDmgRates[armsLevel-1];break;
             case 2: armsEleDmg += yhEleDmgRates[armsLevel-1];break;
             case 3: armsEleDmg += dlEleDmgRates[armsLevel-1];break;
         }
-        var eleDmgRate = 1 + cupEleDmg + inbornEleDmg + skillEleDmg + suitEleDmg + armsEleDmg;
-        console.log("charge:" + charge);
-        console.log("eleDmgRate:" + eleDmgRate);
+        var teamEleDmgBuff = 0;
+        if(buffWy) {
+            teamEleDmgBuff += 1000 * 0.0004;
+        }
+        if(buffSt) {
+            teamEleDmgBuff += 0.2/* + 0.2*/;
+        }
+        var eleDmgRate = 1 + cupEleDmg + inbornEleDmg + skillEleDmg + suitEleDmg + armsEleDmg + teamEleDmgBuff;
+        console.log("充能:" + charge);
+        console.log("增伤乘区:" + eleDmgRate);
 
         //爆伤乘区
         var criDmgRate = 1 + criDmg;
-        console.log("criDmgRate:" + criDmgRate);
+        if(buffJt) {
+            criDmgRate += 0.6;
+        }
+        console.log("爆伤乘区:" + criDmgRate);
 
         //反应乘区
         // var suitMaster = suitType === 0 ? 0 : 0;
@@ -361,8 +398,8 @@
 
         //抗性乘区
         var eleResPercent = eleRes/100;
-        if(life >= 1) {
-            eleResPercent -= 0.15;
+        if(buffWy || buffSt) {
+            eleResPercent -= 0.4;
         }
         var eleResRate = 0;
         if(eleResPercent <=0) {
@@ -372,7 +409,7 @@
         } else {
             eleResRate = 1/(4*eleResPercent + 1);
         }
-        console.log("eleResRate:" + eleResRate);
+        console.log("抗性乘区:" + eleResRate);
 
         //防御乘区
         var playerLevel = 90;//玩家等级
@@ -384,7 +421,7 @@
             defIgnBuff += 0.6;
         }
         var defRate = (playerLevel + 100) * 5 / ((playerLevel + 100) * 5 + monsterDef * ( 1 + defAddBuff - defSubBuff) * (1 - defIgnBuff));
-        console.log("defRate:" + defRate);
+        console.log("防御乘区:" + defRate);
 
         //暴击伤害
         var dps = atk * skillRateQ * eleDmgRate * eleResRate * defRate * criDmgRate;
