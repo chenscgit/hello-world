@@ -75,27 +75,27 @@
     </tr>
         <tr>
             <td>生命值：</td>
-            <td><input id="hpEx" size="10" placeholder="生命值" value="7335"/></td>
+            <td><input id="hpEx" size="10" placeholder="生命值" value="7787"/></td>
         </tr>
     <tr>
         <td>攻击力：</td>
-        <td><input id="atkEx" size="10" placeholder="攻击力" value="595"/></td>
+        <td><input id="atkEx" size="10" placeholder="攻击力" value="930"/></td>
     </tr>
     <tr>
         <td>元素精通：</td>
-        <td><input id="masterEx" size="10" placeholder="元素精通" value="44"/></td>
+        <td><input id="masterEx" size="10" placeholder="元素精通" value="65"/></td>
     </tr>
     <tr>
         <td>暴击率：</td>
-        <td><input id="criEx" size="10" placeholder="暴击率" value="63.8"/></td>
+        <td><input id="criEx" size="10" placeholder="暴击率" value="34.2"/></td>
     </tr>
     <tr>
         <td>暴击伤害：</td>
-        <td><input id="criDmgEx" size="10" placeholder="暴击伤害" value="61.4"/></td>
+        <td><input id="criDmgEx" size="10" placeholder="暴击伤害" value="115.8"/></td>
     </tr>
     <tr>
         <td>元素充能：</td>
-        <td><input id="chargeEx" size="10" placeholder="元素充能" value="68.6"/></td>
+        <td><input id="chargeEx" size="10" placeholder="元素充能" value="84.8"/></td>
     </tr>
     <tr>
         <td>愿力层数：</td>
@@ -115,7 +115,7 @@
     </tr>
     <tr>
         <td>战技等级：</td>
-        <td><input id="eLevel" size="10" placeholder="战技等级" value="10"/></td>
+        <td><input id="eLevel" size="10" placeholder="战技等级" value="9"/></td>
     </tr>
     <tr>
         <td>大招等级：</td>
@@ -127,16 +127,16 @@
     </tr>
     <tr>
         <td>武器精炼：</td>
-        <td><input id="armsLevel" size="10" placeholder="武器精炼" value="1"/></td>
+        <td><input id="armsLevel" size="10" placeholder="武器精炼" value="5"/></td>
     </tr>
     <tr>
         <td>武器类型：</td>
         <td>
             <select name="armsType" style="width: 100%">
-                <option value = "0" selected>薙草之稻光</option>
+                <option value = "0">薙草之稻光</option>
                 <option value = "1">天空之脊</option>
                 <option value = "2">渔获</option>
-                <option value = "3">断浪长鳍</option>
+                <option value = "3" selected>断浪长鳍</option>
                 <option value = "4">护摩之杖</option>
             </select>
         </td>
@@ -152,7 +152,7 @@
     <tr>
         <td>其他</td>
         <td>
-            <input type="checkbox" id="buff_lb" value="0" checked/>雷杯
+            <input type="checkbox" id="buff_lb" value="0"/>雷杯
             <input type="checkbox" id="buff_gb" value="0"/>攻击杯
             <br/>
             <input type="checkbox" id="buff_jt" value="0"/>九条
@@ -340,6 +340,9 @@
         if(buffZm) {
             teamAtkBuff += atkBase * 0.2;
         }
+        if(buffSt) {
+            teamAtkBuff += atkBase * 0.48;
+        }
         var cupAtk = buffGb ? atkBase * 0.466 : 0;
         var armsAtk = 0;//武器加攻
         if(armsType === 0) {
@@ -377,9 +380,9 @@
         if(buffWy) {
             teamEleDmgBuff += 1000 * 0.0004;
         }
-        if(buffSt) {
-            teamEleDmgBuff += 0.2/* + 0.2*/;
-        }
+        // if(buffSt) {
+        //     teamEleDmgBuff += 0.2/* + 0.2*/;
+        // }
         var eleDmgRate = 1 + cupEleDmg + inbornEleDmg + skillEleDmg + suitEleDmg + armsEleDmg + teamEleDmgBuff;
         console.log("充能:" + charge);
         console.log("增伤乘区:" + eleDmgRate);
