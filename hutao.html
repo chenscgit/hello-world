@@ -67,31 +67,31 @@
 <table style="margin: auto">
     <tr>
         <td>
-            <label style="font-size: 12px;color: blue">图像识别(手机)<input name="photo" type="file" size="30" width="250" style="line-height:0;display:none" onchange="onFileChange(0)"></label>
+<!--            <label style="font-size: 12px;color: blue">图像识别(手机)<input name="photo" type="file" size="30" width="250" style="line-height:0;display:none" onchange="onFileChange(0)"></label>-->
         </td>
         <td>
-<!--            <label style="font-size: 12px;color: blue">图像识别(电脑)<input name="photo" type="file" size="30" width="250" style="line-height:0;display:none" onchange="onFileChange(1)"></label>-->
+            <!--            <label style="font-size: 12px;color: blue">图像识别(电脑)<input name="photo" type="file" size="30" width="250" style="line-height:0;display:none" onchange="onFileChange(1)"></label>-->
         </td>
     </tr>
     <tr>
         <td>生命值：</td>
-        <td><input id="hpEx" size="10" placeholder="生命值" value="15518"/></td>
+        <td><input id="hpEx" size="10" placeholder="生命值" value="13322"/></td>
     </tr>
     <tr>
         <td>攻击力：</td>
-        <td><input id="atkEx" size="10" placeholder="攻击力" value="377"/></td>
+        <td><input id="atkEx" size="10" placeholder="攻击力" value="441"/></td>
     </tr>
     <tr>
         <td>元素精通：</td>
-        <td><input id="masterEx" size="10" placeholder="元素精通" value="154"/></td>
+        <td><input id="masterEx" size="10" placeholder="元素精通" value="198"/></td>
     </tr>
     <tr>
         <td>暴击率：</td>
-        <td><input id="criEx" size="10" placeholder="暴击率" value="59.9"/></td>
+        <td><input id="criEx" size="10" placeholder="暴击率" value="64.2"/></td>
     </tr>
     <tr>
         <td>暴击伤害：</td>
-        <td><input id="criDmgEx" size="10" placeholder="暴击伤害" value="94.0"/></td>
+        <td><input id="criDmgEx" size="10" placeholder="暴击伤害" value="83.9"/></td>
     </tr>
     <tr>
         <td>怪物等级：</td>
@@ -121,8 +121,11 @@
         <td>武器类型：</td>
         <td>
             <select name="armsType" style="width: 100%">
-                <option value = "0" selected>护摩之杖</option>
-                <option value = "1">匣里灭辰</option>
+                <option value = "0" selected>护摩</option>
+                <option value = "1">匣里</option>
+                <option value = "2">千岩(3璃月)</option>
+                <option value = "3">千岩(4璃月)</option>
+                <option value = "4">赤沙</option>
             </select>
         </td>
     </tr>
@@ -132,7 +135,35 @@
             <select name="suitType" style="width: 100%">
                 <option value = "0" selected>4魔女</option>
                 <option value = "1">4追忆</option>
+                <option value = "2">4饰金(3元素)</option>
+                <option value = "3">4饰金(4元素)</option>
             </select>
+        </td>
+    </tr>
+    <tr>
+        <td>沙漏转换：</td>
+        <td>
+            <select name="shalou" style="width: 100%">
+                <option value = "0" selected>不换</option>
+                <option value = "1">生命换精通</option>
+                <option value = "2">精通换生命</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>其他buff：</td>
+        <td>
+            <input type="checkbox" id="buff_ss" value="0"/>双水
+            <input type="checkbox" id="buff_zs" value="0"/>宗室
+            <br/>
+            <input type="checkbox" id="buff_zm" value="0"/>终末
+            <input type="checkbox" id="buff_jg" value="0"/>教官
+        </td>
+    </tr>
+    <tr>
+        <td>配平双爆：</td>
+        <td>
+            <input type="checkbox" id="ppsb" value="0"/>暴击<input id="criStandard" size="4" placeholder="暴击标准" value="70"/>
         </td>
     </tr>
     <tr>
@@ -144,7 +175,7 @@
     </tr>
     <tr>
         <td>暴击伤害: </td>
-        <td id="dps"></td>
+        <td id="cri"></td>
     </tr>
     <tr>
         <td>未暴击伤害: </td>
@@ -164,7 +195,7 @@
     </tr>
     <tr>
         <td>暴击伤害: </td>
-        <td id="melt_dps"></td>
+        <td id="melt_cri"></td>
     </tr>
     <tr>
         <td>未暴击伤害: </td>
@@ -192,7 +223,7 @@
     </tr>
     <tr>
         <td>暴击伤害: </td>
-        <td id="dps2"></td>
+        <td id="cri2"></td>
     </tr>
     <tr>
         <td>未暴击伤害: </td>
@@ -212,7 +243,7 @@
     </tr>
     <tr>
         <td>暴击伤害: </td>
-        <td id="melt_dps2"></td>
+        <td id="melt_cri2"></td>
     </tr>
     <tr>
         <td>未暴击伤害: </td>
@@ -267,7 +298,34 @@
         }
     }
 
+    //赤沙攻击buff
+    var csLevel = 1;
+    var csAtkRates = [0.52+0.28*csLevel, 0.65+0.35*csLevel, 0.78+0.42*csLevel, 0.91+0.49*csLevel, 1.04+0.56*csLevel];
+    //千岩3攻击buff
+    var qy3AtkRates = [0.21, 0.24, 0.27, 0.30, 0.33];
+    //千岩3暴击buff
+    var qy3CriRates = [0.09, 0.12, 0.15, 0.18, 0.21];
+    //千岩4攻击buff
+    var qy4AtkRates = [0.28, 0.32, 0.36, 0.40, 0.44];
+    //千岩4暴击buff
+    var qy4CriRates = [0.12, 0.16, 0.20, 0.24, 0.28];
+    //匣里增伤buff
+    var xlEleDmgRates = [0.20, 0.24, 0.28, 0.32, 0.36];
+    //护摩生命buff
+    var hmHpRates = [0.20, 0.25, 0.30, 0.35, 0.40];
+    //护摩满血攻击buff
+    var hmAtkRates = [0.008, 0.01, 0.012, 0.014, 0.016];
+    //护摩半血攻击buff
+    var hmHalfAtkRates = [0.01, 0.012, 0.014, 0.016, 0.018];
+    //普攻技能倍率
+    var aRates = [1.36, 1.452, 1.545, 1.669, 1.761, 1.869, 2.009, 2.148, 2.287, 2.426, 2.565];
+    //e技能buff
+    var eRates = [0.0384, 0.0407, 0.043, 0.046, 0.0483, 0.0506, 0.0536, 0.0566, 0.0596, 0.0626, 0.0656, 0.0685, 0.0715];
+    //q技能倍率
+    var qRates = [3.79, 4.02, 4.24, 4.54, 4.77, 4.99, 5.29, 5.58, 5.88, 6.17, 6.47, 6.76, 7.06];
+
     $("#ok").on("click", function (event) {
+
         //圣遗物属性
         var hpEx = $("#hpEx").val()/1;//生命
         var atkEx = $("#atkEx").val()/1;//攻击
@@ -282,66 +340,145 @@
         var eLevel = $("#eLevel").val()/1;//元素战技等级
         var qLevel = $("#qLevel").val()/1;//元素爆发等级
         var armsLevel = $("#armsLevel").val()/1;//武器精炼
-        var armsType = $("select[name='armsType']").val()/1;//武器类型，0-护摩，1-匣里
-        var suitType = $("select[name='suitType']").val()/1;//套装类型，0-四魔女，1-四追忆
+        var armsType = $("select[name='armsType']").val()/1;//武器类型，0-护摩，1-匣里，2-千岩3，3-千岩4，4-赤沙
+        var suitType = $("select[name='suitType']").val()/1;//套装类型，0-四魔女，1-四追忆，2-饰金3，3-饰金4
+        var shalou = $("select[name='shalou']").val()/1;//1-生命换精通，1-精通换生命
+        var ppsb = $("#ppsb").is(':checked');//配平双爆
+        var criStandard = $("#criStandard").val()/100;//标准暴击
+        var buffSs = $("#buff_ss").is(':checked');//双水
+        var buffZs = $("#buff_zs").is(':checked');//宗室
+        var buffZm = $("#buff_zm").is(':checked');//终末
+        var buffJg = $("#buff_jg").is(':checked');//教官
 
         //基础属性（人物+武器）
         var hpBase = 15552;//生命值白字
-        var atkBase = armsType === 0 ? 714 : 560;//攻击力白字
+        var atkBase = 107;//攻击力白字
+        switch (armsType) {
+            case 0: atkBase += 608;break;//护膜
+            case 1: atkBase += 454;break;//匣里
+            case 2: atkBase += 565;break;//千岩3
+            case 3: atkBase += 565;break;//千岩4
+            case 4: atkBase += 542;break;//赤沙
+        }
         var masterBase = 0;//角色基础精通
         var criBase = 0.05;//角色基础暴击率
         var criDmgBase = 0.884;//角色基础爆伤
-        var criDmgArms = armsType === 0 ? 0.662 : 0;//武器爆伤
-        var masterArms = armsType === 0 ? 0 : 221;//武器精通
-
-        var master = masterBase + masterEx + masterArms;//面板精通
+        var hp = hpBase + hpEx;//最大生命值
+        var master = masterBase + masterEx;//面板精通
         var cri = criBase + criEx;//面板暴击
-        var criDmg = criDmgBase + criDmgArms + criDmgEx;//面板爆伤
+        var criDmg = criDmgBase + criDmgEx;//面板爆伤
+        var atk = atkBase + atkEx;
+        var reaction = 0;//反应系数，魔女15%
+        var eleDmg = 0.466 + 0.33;//增伤，杯子+天赋
+        var eleDmgQ = 0.466 + 0.33;//q增伤，杯子+天赋
 
-        //匣里增伤buff
-        var xlEleDmgRates = [0.20, 0.24, 0.28, 0.32, 0.36];
-        //护摩生命buff
-        var hmHpRates = [0.20, 0.25, 0.30, 0.35, 0.40];
-        //护摩满血攻击buff
-        var hmAtkRates = [0.008, 0.01, 0.012, 0.014, 0.016];
-        //护摩半血攻击buff
-        var hmHalfAtkRates = [0.01, 0.012, 0.014, 0.016, 0.018];
-        //普攻技能倍率
-        var aRates = [1.36, 1.452, 1.545, 1.669, 1.761, 1.869, 2.009, 2.148, 2.287, 2.426, 2.565];
-        //e技能buff
-        var eRates = [0.0384, 0.0407, 0.043, 0.046, 0.0483, 0.0506, 0.0536, 0.0566, 0.0596, 0.0626, 0.0656, 0.0685, 0.0715];
-        //q技能倍率
-        var qRates = [3.79, 4.02, 4.24, 4.54, 4.77, 4.99, 5.29, 5.58, 5.88, 6.17, 6.47, 6.76, 7.06];
+        //沙漏转换
+        if (shalou === 1) {
+            hp -= 0.466 * hpBase;//生命沙
+            master += 187;//精通沙
+        }else if (shalou === 2) {
+            hp += 0.466 * hpBase;//生命沙
+            master -= 187;//精通沙
+        }
+        //双水buff
+        if(buffSs) {
+            hp += 0.25 * hpBase;
+        }
+        //宗室buff
+        if(buffZs) {
+            atk += 0.2 * atkBase;
+        }
+        //终末buff
+        if(buffZm) {
+            master += 100;
+            atk += 0.2 * atkBase;
+        }
+        //教官buff
+        if(buffJg) {
+            master += 120;
+        }
 
-        //攻击力乘区
-        var armsHp = armsType === 0 ? hpBase * hmHpRates[armsLevel-1] : 0;//武器增加生命值
-        var hp = hpBase + hpEx + armsHp;//最大生命值
+        //圣遗物特效
+        switch (suitType) {
+            case 0: {
+                eleDmg += 0.225;
+                eleDmgQ += 0.225;
+                reaction += 0.15;
+                break;//魔女
+            }
+            case 1: {
+                atk += 0.18 * atkBase;
+                eleDmg += 0.5;
+                break;//追忆
+            }
+            case 2: {
+                master += 180;
+                break;//饰金3
+            }
+            case 3: {
+                master += 230;
+                break;//饰金4
+            }
+        }
+        //武器特效
+        switch (armsType) {
+            case 0: {
+                hp += hpBase * hmHpRates[armsLevel-1];
+                atk += hp * (hmAtkRates[armsLevel - 1] + hmHalfAtkRates[armsLevel - 1]);
+                criDmg += 0.662;
+                break;//护膜（半血）
+            }
+            case 1: {
+                master += 221;
+                eleDmg += xlEleDmgRates[armsLevel-1];
+                break;//匣里
+            }
+            case 2: {
+                atk += (0.276 + qy3AtkRates[armsLevel - 1]) * atkBase;
+                cri += qy3CriRates[armsLevel-1];
+                break;//千岩3
+            }
+            case 3: {
+                atk += (0.276 + qy4AtkRates[armsLevel - 1]) * atkBase;
+                cri += qy4CriRates[armsLevel-1];
+                break;//千岩4
+            }
+            case 4: {
+                atk += csAtkRates[armsLevel - 1] * master;
+                cri += 0.441;
+                break;//赤沙
+            }
+        }
+
+        //配平双爆
+        if(ppsb) {
+            var subCri = criStandard - cri;
+            cri = criStandard;
+            criDmg -= subCri*2;
+        }
+
+
+        //基伤乘区
+        //攻击力
         var skillAtk = hp * eRates[eLevel-1];//技能加攻
-        var armsAtk = armsType === 0 ? hp * (hmAtkRates[armsLevel-1] + hmHalfAtkRates[armsLevel-1]) : 0;//武器加攻（半血）
-        var suitAtk = suitType === 1 ? 0.18 * atkBase : 0;//套装
-        var atk = atkBase + atkEx + skillAtk + armsAtk + suitAtk;
-
-        //技能倍率乘区
+        atk += skillAtk;
+        //技能倍率
         var skillRate = aRates[aLevel-1];
         var skillRate2 = qRates[qLevel-1];
+        //固伤
+        var fixed = 0;
 
         //增伤乘区
-        var cupEleDmg = 0.466;//杯子
-        var inbornEleDmg = 0.33;//天赋
-        var suitEleDmg = suitType === 0 ? 0.225 : 0.5;//套装
-        var suitEleDmgQ = suitType === 0 ? 0.225 : 0;//套装
-        var armsEleDmg = armsType === 0 ? 0 : xlEleDmgRates[armsLevel-1];//武器增伤
-        var eleDmgRate = 1 + cupEleDmg + inbornEleDmg + suitEleDmg + armsEleDmg;
-        var eleDmgRateQ = 1 + cupEleDmg + inbornEleDmg + suitEleDmgQ + armsEleDmg;
+        var eleDmgRate = 1 + eleDmg;
+        var eleDmgRateQ = 1 + eleDmgQ;
 
         //爆伤乘区
         var criDmgRate = 1 + criDmg;
 
         //反应乘区,蒸发1.5倍，融化2倍
-        var suitMaster = suitType === 0 ? 0.15 : 0;//魔女15%
         var masterRate = 278 * master / (master + 1400) / 100;//精通对增幅反应的加成
-        var reactionRate = 1.5 * (1 + suitMaster + masterRate);//蒸发
-        var reactionRate2 = 2 * (1 + suitMaster + masterRate);//融化
+        var reactionRate = 1.5 * (1 + reaction + masterRate);//蒸发
+        var reactionRate2 = 2 * (1 + reaction + masterRate);//融化
 
         //抗性乘区
         var eleResPercent = eleRes/100;
@@ -365,14 +502,14 @@
         //重击
         //蒸发
         //暴击伤害
-        var dps = atk * skillRate * eleDmgRate * eleResRate * defRate * criDmgRate * reactionRate;
+        var dps = (atk * skillRate + fixed) * eleDmgRate * eleResRate * defRate * criDmgRate * reactionRate;
         //期望伤害
         var except = dps / (1 + criDmg) * (1 + criDmg * cri);
         //未暴击伤害
         var unCri = dps / criDmgRate;
         //融化
         //暴击伤害
-        var melt_dps = atk * skillRate * eleDmgRate * eleResRate * defRate * criDmgRate * reactionRate2;
+        var melt_dps = (atk * skillRate + fixed) * eleDmgRate * eleResRate * defRate * criDmgRate * reactionRate2;
         //期望伤害
         var melt_except = melt_dps / (1 + criDmg) * (1 + criDmg * cri);
         //未暴击伤害
@@ -383,14 +520,14 @@
         //大招
         //蒸发
         //暴击伤害
-        var dps2 = atk * skillRate2 * eleDmgRateQ * eleResRate * defRate * criDmgRate * reactionRate;
+        var dps2 = (atk * skillRate2 + fixed) * eleDmgRateQ * eleResRate * defRate * criDmgRate * reactionRate;
         //期望伤害
         var except2 = dps2 / (1 + criDmg) * (1 + criDmg * cri);
         //未暴击伤害
         var unCri2 = dps2 / criDmgRate;
         //融化
         //暴击伤害
-        var melt_dps2 = atk * skillRate2 * eleDmgRateQ * eleResRate * defRate * criDmgRate * reactionRate2;
+        var melt_dps2 = (atk * skillRate2 + fixed) * eleDmgRateQ * eleResRate * defRate * criDmgRate * reactionRate2;
         //期望伤害
         var melt_except2 = melt_dps2 / (1 + criDmg) * (1 + criDmg * cri);
         //未暴击伤害
@@ -398,17 +535,17 @@
         //未反应伤害
         var unRea2 = dps2 / reactionRate;
 
-        $("#dps").text(dps.toFixed(0));
+        $("#cri").text(dps.toFixed(0));
         $("#except").text(except.toFixed(0));
         $("#unCri").text(unCri.toFixed(0));
-        $("#melt_dps").text(melt_dps.toFixed(0));
+        $("#melt_cri").text(melt_dps.toFixed(0));
         $("#melt_except").text(melt_except.toFixed(0));
         $("#melt_unCri").text(melt_unCri.toFixed(0));
         $("#unRea").text(unRea.toFixed(0));
-        $("#dps2").text(dps2.toFixed(0));
+        $("#cri2").text(dps2.toFixed(0));
         $("#except2").text(except2.toFixed(0));
         $("#unCri2").text(unCri2.toFixed(0));
-        $("#melt_dps2").text(melt_dps2.toFixed(0));
+        $("#melt_cri2").text(melt_dps2.toFixed(0));
         $("#melt_except2").text(melt_except2.toFixed(0));
         $("#melt_unCri2").text(melt_unCri2.toFixed(0));
         $("#unRea2").text(unRea2.toFixed(0));
