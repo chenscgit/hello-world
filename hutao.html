@@ -186,9 +186,14 @@
                 <br/>
                 <input type="checkbox" id="buff_tl" value="0"/>讨龙精5
                 <br/>
+                <input type="checkbox" id="buff_zl" value="0"/>钟离
+                <br/>
                 <input type="checkbox" id="buff_mn" value="0"/>莫纳9
                 <br/>
                 <input type="checkbox" id="buff_abd" value="0"/>阿贝多
+                <br/>
+                <input type="checkbox" id="buff_yl" value="0"/>夜兰
+                <input id="buff_yl_zs" size="1" placeholder="增伤1-50" value="30"/>
                 <br/>
                 <input type="checkbox" id="buff_st" value="0"/>砂糖
                 <input id="buff_st_jt" size="1" placeholder="精通" value="800"/>
@@ -394,7 +399,9 @@
         var buffCg = $("#buff_cg").is(':checked');//苍古
         var buffTl = $("#buff_tl").is(':checked');//讨龙
         var buffMn = $("#buff_mn").is(':checked');//莫纳
+        var buffZl = $("#buff_zl").is(':checked');//钟离
         var buffAbd = $("#buff_abd").is(':checked');//阿贝多
+        var buffYl = $("#buff_yl").is(':checked');//夜兰
         var buffWy = $("#buff_wy").is(':checked');//万叶
         var buffSt = $("#buff_st").is(':checked');//砂糖
         var buffSt6 = $("#buff_st6").is(':checked');//砂糖6
@@ -403,6 +410,7 @@
         var buffWyJt = $("#buff_wy_jt").val()/1;//万叶精通
         var buffStJt = $("#buff_st_jt").val()/1;//砂糖精通
         var buffBntGj = $("#buff_bnt_gj").val()/1;//班尼特攻击
+        var buffYlZs = $("#buff_yl_zs").val()/100;//夜兰增伤
 
 
         //基础属性（人物+武器）
@@ -478,6 +486,10 @@
         if(buffTl) {
             atk += 0.48 * atkBase;
         }
+        //钟离buff
+        if(buffZl) {
+            eleRes -= 20;
+        }
         //莫纳buff
         if(buffMn) {
             eleDmg += 0.6;
@@ -486,6 +498,11 @@
         //阿贝多buff
         if(buffAbd) {
             master += 125;
+        }
+        //夜兰增伤buff
+        if(buffYl) {
+            eleDmg += buffYlZs;
+            eleDmgQ += buffYlZs;
         }
         //万叶buff
         if(buffWy) {
