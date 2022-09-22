@@ -156,19 +156,54 @@
         </td>
     </tr>
     <tr>
-        <td>其他buff：</td>
-        <td>
-            <input type="checkbox" id="buff_ss" value="0"/>双水
-            <input type="checkbox" id="buff_zs" value="0"/>宗室
-            <br/>
-            <input type="checkbox" id="buff_zm" value="0"/>终末
-            <input type="checkbox" id="buff_jg" value="0"/>教官
-        </td>
-    </tr>
-    <tr>
         <td>配平双爆：</td>
         <td>
             <input type="checkbox" id="ppsb" value="0"/>暴击<input id="criStandard" size="4" placeholder="暴击标准" value="70"/>
+        </td>
+    </tr>
+    <tr>
+        <td>其他buff：</td>
+        <td>
+            <button id="open" onclick="javaScript:$('#buff').show();$('#close').show();$('#open').hide();">展开</button>
+            <div id="buff" style="display:none">
+                <input type="checkbox" id="buff_ss" value="0"/>双水
+                <br/>
+                <input type="checkbox" id="buff_sy" value="0"/>双岩
+                <br/>
+                <input type="checkbox" id="buff_sh" value="0"/>双火
+                <br/>
+                <input type="checkbox" id="buff_zs" value="0"/>宗室4
+                <br/>
+                <input type="checkbox" id="buff_qy" value="0"/>千岩4
+                <br/>
+                <input type="checkbox" id="buff_jg" value="0"/>教官4
+                <br/>
+                <input type="checkbox" id="buff_cl" value="0"/>翠绿4
+                <br/>
+                <input type="checkbox" id="buff_zm" value="0"/>终末精1
+                <br/>
+                <input type="checkbox" id="buff_cg" value="0"/>苍古精1
+                <br/>
+                <input type="checkbox" id="buff_tl" value="0"/>讨龙精5
+                <br/>
+                <input type="checkbox" id="buff_mn" value="0"/>莫纳9
+                <br/>
+                <input type="checkbox" id="buff_abd" value="0"/>阿贝多
+                <br/>
+                <input type="checkbox" id="buff_st" value="0"/>砂糖
+                <input id="buff_st_jt" size="1" placeholder="精通" value="800"/>
+                <br/>
+                <input type="checkbox" id="buff_st6" value="0"/>砂糖6命
+                <br/>
+                <input type="checkbox" id="buff_bnt" value="0"/>班12
+                <input id="buff_bnt_gj" size="1" placeholder="攻击" value="799"/>
+                <br/>
+                <input type="checkbox" id="buff_bnt6" value="0"/>班尼特6命
+                <br/>
+                <input type="checkbox" id="buff_wy" value="0"/>万叶
+                <input id="buff_wy_jt" size="1" placeholder="精通" value="1000"/>
+            </div>
+            <button id="close" style="display:none" onclick="javaScript:$('#buff').hide();$('#close').hide();$('#open').show();">收起</button>
         </td>
     </tr>
     <tr>
@@ -349,9 +384,26 @@
         var ppsb = $("#ppsb").is(':checked');//配平双爆
         var criStandard = $("#criStandard").val()/100;//标准暴击
         var buffSs = $("#buff_ss").is(':checked');//双水
+        var buffSy = $("#buff_sy").is(':checked');//双岩
+        var buffSh = $("#buff_sh").is(':checked');//双火
         var buffZs = $("#buff_zs").is(':checked');//宗室
-        var buffZm = $("#buff_zm").is(':checked');//终末
+        var buffQy = $("#buff_qy").is(':checked');//千岩
         var buffJg = $("#buff_jg").is(':checked');//教官
+        var buffCl = $("#buff_cl").is(':checked');//翠绿
+        var buffZm = $("#buff_zm").is(':checked');//终末
+        var buffCg = $("#buff_cg").is(':checked');//苍古
+        var buffTl = $("#buff_tl").is(':checked');//讨龙
+        var buffMn = $("#buff_mn").is(':checked');//莫纳
+        var buffAbd = $("#buff_abd").is(':checked');//阿贝多
+        var buffWy = $("#buff_wy").is(':checked');//万叶
+        var buffSt = $("#buff_st").is(':checked');//砂糖
+        var buffSt6 = $("#buff_st6").is(':checked');//砂糖6
+        var buffBnt = $("#buff_bnt").is(':checked');//班尼特
+        var buffBnt6 = $("#buff_bnt6").is(':checked');//班尼特6
+        var buffWyJt = $("#buff_wy_jt").val()/1;//万叶精通
+        var buffStJt = $("#buff_st_jt").val()/1;//砂糖精通
+        var buffBntGj = $("#buff_bnt_gj").val()/1;//班尼特攻击
+
 
         //基础属性（人物+武器）
         var hpBase = 15552;//生命值白字
@@ -387,19 +439,78 @@
         if(buffSs) {
             hp += 0.25 * hpBase;
         }
+        //双岩buff
+        if(buffSy) {
+            eleDmg += 0.15;
+            eleDmgQ += 0.15;
+        }
+        //双火buff
+        if(buffSh) {
+            atk += 0.2 * atkBase;
+        }
         //宗室buff
         if(buffZs) {
             atk += 0.2 * atkBase;
         }
-        //终末buff
-        if(buffZm) {
-            master += 100;
+        //千岩buff
+        if(buffQy) {
             atk += 0.2 * atkBase;
         }
         //教官buff
         if(buffJg) {
             master += 120;
         }
+        //翠绿buff
+        if(buffCl) {
+            eleRes -= 40;
+        }
+        //终末buff
+        if(buffZm) {
+            master += 100;
+            atk += 0.2 * atkBase;
+        }
+        //苍古buff
+        if(buffCg) {
+            eleDmg += 0.16;
+            atk += 0.2 * atkBase;
+        }
+        //讨龙buff
+        if(buffTl) {
+            atk += 0.48 * atkBase;
+        }
+        //莫纳buff
+        if(buffMn) {
+            eleDmg += 0.6;
+            eleDmgQ += 0.6;
+        }
+        //阿贝多buff
+        if(buffAbd) {
+            master += 125;
+        }
+        //万叶buff
+        if(buffWy) {
+            eleDmg += 0.0004*buffWyJt;
+            eleDmgQ += 0.0004*buffWyJt;
+        }
+        //砂糖精通buff
+        if(buffSt) {
+            master += 50 + 0.2*buffStJt;
+        }
+        //砂糖增伤buff
+        if(buffSt6) {
+            eleDmg += 0.2;
+            eleDmgQ += 0.2;
+        }
+        //班尼特攻击buff
+        if(buffBnt) {
+            atk += 1.32*buffBntGj;
+        }
+        //班尼特增伤buff
+        if(buffBnt6) {
+            eleDmg += 0.15;
+            eleDmgQ += 0.15;
+        }
+
 
         //圣遗物特效
         switch (suitType) {
