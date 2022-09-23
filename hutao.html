@@ -72,7 +72,7 @@
     </tr>
     <tr>
         <td>
-            <label style="font-size: 12px;color: blue">图像识别(手机2340x1080)<input name="photo" type="file" size="30" width="250" style="line-height:0;display:none" onchange="onFileChange(0)"></label>
+            <label style="font-size: 16px;color: blue">图像识别(手机)<input name="photo" type="file" size="30" width="250" style="line-height:0;display:none" onchange="onFileChange(0)"></label>
         </td>
         <td>
             <!--            <label style="font-size: 12px;color: blue">图像识别(电脑)<input name="photo" type="file" size="30" width="250" style="line-height:0;display:none" onchange="onFileChange(1)"></label>-->
@@ -308,7 +308,23 @@
     async function onFileChange() {
         showLoading(true);
         const exampleImage = $("[name=photo]").get(0).files[0];
-
+        //读取图片数据
+        var wid = 0;
+        var hei = 0;
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            var data = e.target.result;
+            //加载图片获取图片真实宽度和高度
+            var image = new Image();
+            image.onload=function(){
+               wid = image.width;
+               hei = image.height;
+                console.log(wid);
+                console.log(hei);
+            };
+            image.src= data;
+        };
+        reader.readAsDataURL(exampleImage);
         const worker = Tesseract.createWorker({
             langPath: '.',
             logger: m => console.log(m)
@@ -324,7 +340,7 @@
                 tessedit_char_whitelist: '0123456789.+%',
             });
 
-            var rec = {top: 0, left: 1300, width: 600, height: 850};
+            var rec = {top: 0, left: wid*0.6, width: wid*0.2, height: hei};
             var result = await worker.recognize(exampleImage, {
                 rectangle: rec,
             });
