@@ -72,7 +72,7 @@
     </tr>
     <tr>
         <td>
-<!--            <label style="font-size: 12px;color: blue">图像识别(手机)<input name="photo" type="file" size="30" width="250" style="line-height:0;display:none" onchange="onFileChange(0)"></label>-->
+            <label style="font-size: 12px;color: blue">图像识别(手机2340x1080)<input name="photo" type="file" size="30" width="250" style="line-height:0;display:none" onchange="onFileChange(0)"></label>
         </td>
         <td>
             <!--            <label style="font-size: 12px;color: blue">图像识别(电脑)<input name="photo" type="file" size="30" width="250" style="line-height:0;display:none" onchange="onFileChange(1)"></label>-->
@@ -318,13 +318,13 @@
 
         async function work() {
             await worker.load();
-            await worker.loadLanguage('eng');
-            await worker.initialize('eng');
+            await worker.loadLanguage('eng1');
+            await worker.initialize('eng1');
             await worker.setParameters({
                 tessedit_char_whitelist: '0123456789.+%',
             });
 
-            var rec = {top: 0, left: 1300, width: 300, height: 850};
+            var rec = {top: 0, left: 1300, width: 600, height: 850};
             var result = await worker.recognize(exampleImage, {
                 rectangle: rec,
             });
