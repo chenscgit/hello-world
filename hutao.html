@@ -162,9 +162,23 @@
         </td>
     </tr>
     <tr>
-        <td>其他buff：</td>
+        <td style="vertical-align:top">调整词条：</td>
         <td>
-            <button id="open" onclick="javaScript:$('#buff').show();$('#close').show();$('#open').hide();">展开</button>
+            <button id="open1" onclick="javaScript:$('#add').show();$('#close1').show();$('#open1').hide();">展开</button>
+            <div id="add" style="font-size: 16px;display:none">
+                生命+<input id="hpAdd" placeholder="条数" value="0" style="width: 40px"/>4.955%
+                <br/>
+                精通+<input id="masterAdd" placeholder="条数" value="0" style="width: 40px"/>19.815
+                <br/>
+                爆伤+<input id="criDAdd" placeholder="条数" value="0" style="width: 40px"/>6.605%
+            </div>
+            <button id="close1" style="display:none" onclick="javaScript:$('#add').hide();$('#close1').hide();$('#open1').show();">收起</button>
+        </td>
+    </tr>
+    <tr>
+        <td style="vertical-align:top">其他buff：</td>
+        <td>
+            <button id="open2" onclick="javaScript:$('#buff').show();$('#close2').show();$('#open2').hide();">展开</button>
             <div id="buff" style="display:none">
                 <input type="checkbox" id="buff_ss" value="0"/>双水
                 <br/>
@@ -208,7 +222,7 @@
                 <input type="checkbox" id="buff_wy" value="0"/>万叶
                 <input id="buff_wy_jt" size="1" placeholder="精通" value="1000"/>
             </div>
-            <button id="close" style="display:none" onclick="javaScript:$('#buff').hide();$('#close').hide();$('#open').show();">收起</button>
+            <button id="close2" style="display:none" onclick="javaScript:$('#buff').hide();$('#close2').hide();$('#open2').show();">收起</button>
         </td>
     </tr>
     <tr>
@@ -317,8 +331,8 @@
             //加载图片获取图片真实宽度和高度
             var image = new Image();
             image.onload=function(){
-               wid = image.width;
-               hei = image.height;
+                wid = image.width;
+                hei = image.height;
                 console.log(wid);
                 console.log(hei);
             };
@@ -383,6 +397,11 @@
     //q技能倍率
     var qRates = [3.79, 4.02, 4.24, 4.54, 4.77, 4.99, 5.29, 5.58, 5.88, 6.17, 6.47, 6.76, 7.06];
 
+    //副词条每条平均分
+    var hpAvg = 4.955/100;//大生命
+    var criDAvg = 6.605/100;//爆伤
+    var masterAvg = 19.815;//精通
+
     $("#ok").on("click", function (event) {
 
         //圣遗物属性
@@ -427,7 +446,12 @@
         var buffStJt = $("#buff_st_jt").val()/1;//砂糖精通
         var buffBntGj = $("#buff_bnt_gj").val()/1;//班尼特攻击
         var buffYlZs = $("#buff_yl_zs").val()/100;//夜兰增伤
-
+        var addHp = $("#hpAdd").val()/1;//增加生命条数
+        var addMaster = $("#masterAdd").val()/1;//增加精通条数
+        var addCriD = $("#criDAdd").val()/1;//增加爆伤条数
+        addHp = isNaN(addHp) ? 0 : addHp;
+        addMaster = isNaN(addMaster) ? 0 : addMaster;
+        addCriD = isNaN(addCriD) ? 0 : addCriD;
 
         //基础属性（人物+武器）
         var hpBase = 15552;//生命值白字
@@ -459,6 +483,11 @@
             hp += 0.466 * hpBase;//生命沙
             master -= 187;//精通沙
         }
+        //调整词条
+        hp += addHp * hpAvg * hpBase;
+        master += addMaster * masterAvg;
+        criDmg += addCriD * criDAvg;
+
         //双水buff
         if(buffSs) {
             hp += 0.25 * hpBase;
