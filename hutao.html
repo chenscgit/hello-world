@@ -166,11 +166,13 @@
         <td>
             <button id="open1" onclick="javaScript:$('#add').show();$('#close1').show();$('#open1').hide();">展开</button>
             <div id="add" style="font-size: 16px;display:none">
-                生命+<input id="hpAdd" placeholder="条数" value="0" style="width: 40px"/>*4.955%
+                生命+<input id="hpAdd" placeholder="条数" value="0" style="width: 40px"/>4.955%
                 <br/>
-                精通+<input id="masterAdd" placeholder="条数" value="0" style="width: 40px"/>*19.815
+                精通+<input id="masterAdd" placeholder="条数" value="0" style="width: 40px"/>19.815
                 <br/>
-                爆伤+<input id="criDAdd" placeholder="条数" value="0" style="width: 40px"/>*6.605%
+                爆伤+<input id="criDAdd" placeholder="条数" value="0" style="width: 40px"/>6.605%
+                <br/>
+                暴击+<input id="criAdd" placeholder="条数" value="0" style="width: 40px"/>3.295%
             </div>
             <button id="close1" style="display:none" onclick="javaScript:$('#add').hide();$('#close1').hide();$('#open1').show();">收起</button>
         </td>
@@ -401,6 +403,7 @@
     var hpAvg = 4.955/100;//大生命
     var criDAvg = 6.605/100;//爆伤
     var masterAvg = 19.815;//精通
+    var criAvg = 3.295/100;//暴击
 
     $("#ok").on("click", function (event) {
 
@@ -449,9 +452,11 @@
         var addHp = $("#hpAdd").val()/1;//增加生命条数
         var addMaster = $("#masterAdd").val()/1;//增加精通条数
         var addCriD = $("#criDAdd").val()/1;//增加爆伤条数
+        var addCri = $("#criAdd").val()/1;//增加暴击条数
         addHp = isNaN(addHp) ? 0 : addHp;
         addMaster = isNaN(addMaster) ? 0 : addMaster;
         addCriD = isNaN(addCriD) ? 0 : addCriD;
+        addCri = isNaN(addCri) ? 0 : addCri;
 
         //基础属性（人物+武器）
         var hpBase = 15552;//生命值白字
@@ -487,6 +492,7 @@
         hp += addHp * hpAvg * hpBase;
         master += addMaster * masterAvg;
         criDmg += addCriD * criDAvg;
+        cri += addCri * criAvg;
 
         //双水buff
         if(buffSs) {
