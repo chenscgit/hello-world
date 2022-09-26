@@ -166,6 +166,16 @@
     </td>
   </tr>
   <tr>
+    <td>杯子转换：</td>
+    <td>
+      <select name="beizi" style="width: 100%">
+        <option value = "0" selected>不换</option>
+        <option value = "1">攻击换雷伤</option>
+        <option value = "2">雷伤换攻击</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
     <td>配平双爆：</td>
     <td>
       <input type="checkbox" id="ppsb" value="0"/>暴击<input id="criStandard" size="4" placeholder="暴击标准" value="70"/>
@@ -372,6 +382,7 @@
     var armsType = $("select[name='armsType']").val()/1;//武器类型
     var suitType = $("select[name='suitType']").val()/1;//套装类型
     var shalou = $("select[name='shalou']").val()/1;//沙漏转换
+    var beizi = $("select[name='beizi']").val()/1;//杯子转换
     var ppsb = $("#ppsb").is(':checked');//配平双爆
     var criStandard = $("#criStandard").val()/100;//标准暴击
     var buffZs = $("#buff_zs").is(':checked');//宗室
@@ -420,6 +431,15 @@
       charge += 0.518;//充能沙
       atk -= 0.466 * atkBase;//攻击沙
     }
+    //杯子转换
+    if (beizi === 1) {
+      atk -= 0.466 * atkBase;//攻击
+      eleDmg += 0.466;//雷伤
+    }else if (beizi === 2) {
+      atk += 0.466 * atkBase;//攻击
+      eleDmg -= 0.466;//雷伤
+    }
+
     //调整词条
     atk += addAtk * atkAvg * atkBase;
     charge += addCharge * chargeAvg;
