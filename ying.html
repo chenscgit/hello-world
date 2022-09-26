@@ -1,475 +1,628 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=2.0, user-scalable=yes" />
-    <title>计算器</title>
-    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.1/dist/tesseract.min.js"></script>
-    <script type="text/javascript" src="spin.js" ></script>
-    <style>
-        td{padding:3px;font-size: 20px}
-        input{font-size: 20px}
-        #foo {
-            position: fixed;
-            left: 0;
-            top: 0;
-            _position: absolute;
-            width: 100%;
-            background: #000;
-            opacity: 0.5;
-            filter: alpha(opacity=50);
-            z-index: 999;
-            display: none;
-        }
-        @keyframes spinner-line-fade-more {
-            0%, 100% {
-                opacity: 0; /* minimum opacity */
-            }
-            1% {
-                opacity: 1;
-            }
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=2.0, user-scalable=yes" />
+  <title>计算器</title>
+  <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.1/dist/tesseract.min.js"></script>
+  <script type="text/javascript" src="spin.js" ></script>
+  <style>
+    td{padding:3px;font-size: 20px}
+    input{font-size: 20px}
+    #foo {
+      position: fixed;
+      left: 0;
+      top: 0;
+      _position: absolute;
+      width: 100%;
+      background: #000;
+      opacity: 0.5;
+      filter: alpha(opacity=50);
+      z-index: 999;
+      display: none;
+    }
+    @keyframes spinner-line-fade-more {
+      0%, 100% {
+        opacity: 0; /* minimum opacity */
+      }
+      1% {
+        opacity: 1;
+      }
+    }
 
-        @keyframes spinner-line-fade-quick {
-            0%, 39%, 100% {
-                opacity: 0.25; /* minimum opacity */
-            }
-            40% {
-                opacity: 1;
-            }
-        }
+    @keyframes spinner-line-fade-quick {
+      0%, 39%, 100% {
+        opacity: 0.25; /* minimum opacity */
+      }
+      40% {
+        opacity: 1;
+      }
+    }
 
-        @keyframes spinner-line-fade-default {
-            0%, 100% {
-                opacity: 0.22; /* minimum opacity */
-            }
-            1% {
-                opacity: 1;
-            }
-        }
+    @keyframes spinner-line-fade-default {
+      0%, 100% {
+        opacity: 0.22; /* minimum opacity */
+      }
+      1% {
+        opacity: 1;
+      }
+    }
 
-        @keyframes spinner-line-shrink {
-            0%, 25%, 100% {
-                /* minimum scale and opacity */
-                transform: scale(0.5);
-                opacity: 0.25;
-            }
-            26% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-    </style>
+    @keyframes spinner-line-shrink {
+      0%, 25%, 100% {
+        /* minimum scale and opacity */
+        transform: scale(0.5);
+        opacity: 0.25;
+      }
+      26% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+  </style>
 </head>
 <body>
-<h2 align="center">雷神伤害计算(填圣遗物面板)</h2>
+<h2 align="center">影伤害计算(填圣遗物面板)</h2>
 <table style="margin: auto">
-    <tr>
-        <td>
-<!--            <label style="font-size: 12px;color: blue">图像识别(手机)<input name="photo" type="file" size="30" width="250" style="line-height:0;display:none" onchange="onFileChange(0)"></label>-->
-        </td>
-        <td>
-            <!--            <label style="font-size: 12px;color: blue">图像识别(电脑)<input name="photo" type="file" size="30" width="250" style="line-height:0;display:none" onchange="onFileChange(1)"></label>-->
-        </td>
-    </tr>
-        <tr>
-            <td>生命值：</td>
-            <td><input id="hpEx" size="10" placeholder="生命值" value="7787"/></td>
-        </tr>
-    <tr>
-        <td>攻击力：</td>
-        <td><input id="atkEx" size="10" placeholder="攻击力" value="930"/></td>
-    </tr>
-    <tr>
-        <td>元素精通：</td>
-        <td><input id="masterEx" size="10" placeholder="元素精通" value="65"/></td>
-    </tr>
-    <tr>
-        <td>暴击率：</td>
-        <td><input id="criEx" size="10" placeholder="暴击率" value="34.2"/></td>
-    </tr>
-    <tr>
-        <td>暴击伤害：</td>
-        <td><input id="criDmgEx" size="10" placeholder="暴击伤害" value="115.8"/></td>
-    </tr>
-    <tr>
-        <td>元素充能：</td>
-        <td><input id="chargeEx" size="10" placeholder="元素充能" value="84.8"/></td>
-    </tr>
-    <tr>
-        <td>愿力层数：</td>
-        <td><input id="will" size="10" placeholder="愿力层数" value="60"/></td>
-    </tr>
-    <tr>
-        <td>队伍能量：</td>
-        <td><input id="teamChargeEx" size="10" placeholder="队伍能量" value="290"/></td>
-    </tr>
-    <tr>
-        <td>怪物等级：</td>
-        <td><input id="monsterLevel" size="10" placeholder="怪物等级" value="90"/></td>
-    </tr>
-    <tr>
-        <td>怪物抗性：</td>
-        <td><input id="eleRes" size="10" placeholder="怪物抗性" value="10"/></td>
-    </tr>
-    <tr>
-        <td>战技等级：</td>
-        <td><input id="eLevel" size="10" placeholder="战技等级" value="9"/></td>
-    </tr>
-    <tr>
-        <td>大招等级：</td>
-        <td><input id="qLevel" size="10" placeholder="大招等级" value="10"/></td>
-    </tr>
-    <tr>
-        <td>命座数量：</td>
-        <td><input id="life" size="10" placeholder="命座数量" value="2"/></td>
-    </tr>
-    <tr>
-        <td>武器精炼：</td>
-        <td><input id="armsLevel" size="10" placeholder="武器精炼" value="5"/></td>
-    </tr>
-    <tr>
-        <td>武器类型：</td>
-        <td>
-            <select name="armsType" style="width: 100%">
-                <option value = "0">薙草之稻光</option>
-                <option value = "1">天空之脊</option>
-                <option value = "2">渔获</option>
-                <option value = "3" selected>断浪长鳍</option>
-                <option value = "4">护摩之杖</option>
-            </select>
-        </td>
-    </tr>
-    <tr>
-        <td>套装类型：</td>
-        <td>
-            <select name="suitType" style="width: 100%">
-                <option value = "0" selected>4绝缘</option>
-            </select>
-        </td>
-    </tr>
-    <tr>
-        <td>其他</td>
-        <td>
-            <input type="checkbox" id="buff_lb" value="0"/>雷杯
-            <input type="checkbox" id="buff_gb" value="0"/>攻击杯
-            <br/>
-            <input type="checkbox" id="buff_jt" value="0"/>九条
-            <input type="checkbox" id="buff_bnt" value="0"/>班尼特
-            <br/>
-            <input type="checkbox" id="buff_wy" value="0"/>万叶
-            <input type="checkbox" id="buff_st" value="0"/>砂糖
-            <br/>
-            <input type="checkbox" id="buff_zs" value="0"/>宗室
-            <input type="checkbox" id="buff_zm" value="0"/>终末
-        </td>
-    </tr>
-    <tr>
-        <td colspan="2"><button id="ok" style="margin:20px 0px;padding:10px;width:100%">计算</button></td>
-    </tr>
-    <tr>
-        <td>暴击伤害: </td>
-        <td id="dps"></td>
-    </tr>
-    <tr>
-        <td>未暴击伤害: </td>
-        <td id="dps_unCri"></td>
-    </tr>
-    <tr>
-        <td>期望伤害: </td>
-        <td id="except"></td>
-    </tr>
+  <tr>
+    <td colspan="2">
+      <p style="font-size: 16px">注1：填圣遗物界面的详情面板<br/>注2：先换上攻击白字相同的武器</p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <label style="font-size: 16px;color: blue">图像识别(手机)<input name="photo" type="file" size="30" width="250" style="line-height:0;display:none" onchange="onFileChange(0)"></label>
+    </td>
+    <td>
+      <!--            <label style="font-size: 12px;color: blue">图像识别(电脑)<input name="photo" type="file" size="30" width="250" style="line-height:0;display:none" onchange="onFileChange(1)"></label>-->
+    </td>
+  </tr>
+  <tr>
+    <td>生命值：</td>
+    <td><input id="hpEx" size="10" placeholder="生命值" value="7770"/></td>
+  </tr>
+  <tr>
+    <td>攻击力：</td>
+    <td><input id="atkEx" size="10" placeholder="攻击力" value="1193"/></td>
+  </tr>
+  <tr>
+    <td>元素精通：</td>
+    <td><input id="masterEx" size="10" placeholder="元素精通" value="0"/></td>
+  </tr>
+  <tr>
+    <td>暴击率：</td>
+    <td><input id="criEx" size="10" placeholder="暴击率" value="55.2"/></td>
+  </tr>
+  <tr>
+    <td>暴击伤害：</td>
+    <td><input id="criDmgEx" size="10" placeholder="暴击伤害" value="63.7"/></td>
+  </tr>
+  <tr>
+    <td>元素充能：</td>
+    <td><input id="chargeEx" size="10" placeholder="元素充能" value="93.9"/></td>
+  </tr>
+  <tr>
+    <td>元素伤害：</td>
+    <td><input type="checkbox" id="lb" value="0"/>雷杯</td>
+  </tr>
+  <tr>
+    <td>队伍能量：</td>
+    <td><input id="teamChargeEx" size="10" placeholder="队伍能量" value="290"/></td>
+  </tr>
+  <tr>
+    <td>怪物等级：</td>
+    <td><input id="monsterLevel" size="10" placeholder="怪物等级" value="86"/></td>
+  </tr>
+  <tr>
+    <td>怪物抗性：</td>
+    <td><input id="eleRes" size="10" placeholder="怪物抗性" value="10"/></td>
+  </tr>
+  <tr>
+    <td>战技等级：</td>
+    <td><input id="eLevel" size="10" placeholder="战技等级" value="10"/></td>
+  </tr>
+  <tr>
+    <td>大招等级：</td>
+    <td><input id="qLevel" size="10" placeholder="大招等级" value="10"/></td>
+  </tr>
+  <tr>
+    <td>命座数量：</td>
+    <td><input id="life" size="10" placeholder="命座数量" value="2"/></td>
+  </tr>
+  <tr>
+    <td>武器精炼：</td>
+    <td><input id="armsLevel" size="10" placeholder="武器精炼" value="1"/></td>
+  </tr>
+  <tr>
+    <td>武器类型：</td>
+    <td>
+      <select name="armsType" style="width: 100%">
+        <option value = "0" selected>薙草</option>
+        <option value = "1">天空</option>
+        <option value = "2">渔获</option>
+        <option value = "3">断浪</option>
+        <option value = "4">护摩满血</option>
+        <option value = "5">护摩半血</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td>套装类型：</td>
+    <td>
+      <select name="suitType" style="width: 100%">
+        <option value = "0" selected>4绝缘</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td>沙漏转换：</td>
+    <td>
+      <select name="shalou" style="width: 100%">
+        <option value = "0" selected>不换</option>
+        <option value = "1">充能换攻击</option>
+        <option value = "2">攻击换充能</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td>配平双爆：</td>
+    <td>
+      <input type="checkbox" id="ppsb" value="0"/>暴击<input id="criStandard" size="4" placeholder="暴击标准" value="70"/>
+    </td>
+  </tr>
+  <tr>
+    <td style="vertical-align:top">调整词条：</td>
+    <td>
+      <button id="open1" onclick="javaScript:$('#add').show();$('#close1').show();$('#open1').hide();">展开</button>
+      <div id="add" style="font-size: 16px;display:none">
+        攻击+<input id="atkAdd" placeholder="条数" value="0" style="width: 40px"/>4.955%
+        <br/>
+        充能+<input id="chargeAdd" placeholder="条数" value="0" style="width: 40px"/>5.505%
+        <br/>
+        爆伤+<input id="criDAdd" placeholder="条数" value="0" style="width: 40px"/>6.605%
+      </div>
+      <button id="close1" style="display:none" onclick="javaScript:$('#add').hide();$('#close1').hide();$('#open1').show();">收起</button>
+    </td>
+  </tr>
+  <tr>
+    <td style="vertical-align:top">其他buff:</td>
+    <td>
+      <button id="open2" onclick="javaScript:$('#buff').show();$('#close2').show();$('#open2').hide();">展开</button>
+      <div id="buff" style="display:none">
+        <input type="checkbox" id="buff_jt" value="0"/>九12级
+        <input id="buff_jt_gj" size="1" placeholder="攻击" value="803"/>
+        <br/>
+        <input type="checkbox" id="buff_jt6" value="0"/>九条6命
+        <br/>
+        <input type="checkbox" id="buff_bnt" value="0"/>班12级
+        <input id="buff_bnt_gj" size="1" placeholder="攻击" value="799"/>
+        <br/>
+        <input type="checkbox" id="buff_st6" value="0"/>砂糖6命
+        <br/>
+        <input type="checkbox" id="buff_wy" value="0"/>万叶
+        <input id="buff_wy_jt" size="1" placeholder="精通" value="1000"/>
+        <br/>
+        <input type="checkbox" id="buff_zs" value="0"/>宗室4
+        <br/>
+        <input type="checkbox" id="buff_cl" value="0"/>翠绿4
+        <br/>
+        <input type="checkbox" id="buff_zm" value="0"/>终末/苍古精1
+        <br/>
+        <input type="checkbox" id="buff_tl" value="0"/>讨龙精5
+        <br/>
+        <button id="close2" style="display:none" onclick="javaScript:$('#buff').hide();$('#close2').hide();$('#open2').show();">收起</button>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2"><button id="ok" style="margin:20px 0px;padding:10px;width:100%">计算</button></td>
+  </tr>
+  <tr>
+    <td>满愿力首刀: </td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>暴击伤害: </td>
+    <td id="dps2"></td>
+  </tr>
+  <tr>
+    <td>未暴击伤害: </td>
+    <td id="dps_unCri2"></td>
+  </tr>
+  <tr>
+    <td>期望伤害: </td>
+    <td id="except2"></td>
+  </tr>
+  <tr>
+    <td>零愿力首刀: </td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>暴击伤害: </td>
+    <td id="dps"></td>
+  </tr>
+  <tr>
+    <td>未暴击伤害: </td>
+    <td id="dps_unCri"></td>
+  </tr>
+  <tr>
+    <td>期望伤害: </td>
+    <td id="except"></td>
+  </tr>
 </table>
 <div id="foo" style="width: 100%; height: 100%"></div>
 <script>
-    async function onFileChange() {
-        showLoading(true);
-        const exampleImage = $("[name=photo]").get(0).files[0];
+  async function onFileChange() {
+    showLoading(true);
+    const exampleImage = $("[name=photo]").get(0).files[0];
+    //读取图片数据
+    var wid = 0;
+    var hei = 0;
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      var data = e.target.result;
+      //加载图片获取图片真实宽度和高度
+      var image = new Image();
+      image.onload=function(){
+        wid = image.width;
+        hei = image.height;
+        console.log(wid);
+        console.log(hei);
+      };
+      image.src= data;
+    };
+    reader.readAsDataURL(exampleImage);
+    const worker = Tesseract.createWorker({
+      langPath: '.',
+      logger: m => console.log(m)
+    });
+    Tesseract.setLogging(true);
+    work();
 
-        const worker = Tesseract.createWorker({
-            langPath: '.',
-            logger: m => console.log(m)
-        });
-        Tesseract.setLogging(true);
-        work();
+    async function work() {
+      await worker.load();
+      await worker.loadLanguage('eng1');
+      await worker.initialize('eng1');
+      await worker.setParameters({
+        tessedit_char_whitelist: '0123456789.+%',
+      });
 
-        async function work() {
-            await worker.load();
-            await worker.loadLanguage('eng');
-            await worker.initialize('eng');
-            await worker.setParameters({
-                tessedit_char_whitelist: '0123456789.+%',
-            });
+      var rec = {top: 0, left: wid*0.6, width: wid*0.2, height: hei};
+      var result = await worker.recognize(exampleImage, {
+        rectangle: rec,
+      });
 
-            var rec = {top: 0, left: 1300, width: 300, height: 1080};
-            var result = await worker.recognize(exampleImage/*, {
-                rectangle: rec,
-            }*/);
+      $("#hpEx").val(result.data.words[0].text.replaceAll("+","").replaceAll("%","").replaceAll(" ","").replaceAll(".",""));
+      $("#atkEx").val(result.data.words[1].text.replaceAll("+","").replaceAll("%","").replaceAll(" ","").replaceAll(".",""));
+      $("#masterEx").val(result.data.words[3].text.replaceAll("+","").replaceAll("%","").replaceAll(" ","").replaceAll(".",""));
+      $("#criEx").val(result.data.words[5].text.replaceAll("+","").replaceAll("%","").replaceAll(" ",""));
+      $("#criDmgEx").val(result.data.words[6].text.replaceAll("+","").replaceAll("%","").replaceAll(" ",""));
+      $("#chargeEx").val(result.data.words[9].text.replaceAll("+","").replaceAll("%","").replaceAll(" ",""));
+      showLoading(false);
+      await worker.terminate();
+    }
+  }
 
-            for(var word in result.data.words) {
-                console.log(result.data.words[word].text);
-            }
+  //稻光增伤buff
+  var dgChargeRates = [0.3, 0.35, 0.4, 0.45, 0.5];
+  var dgAtkRates = function(charge, level) {
+    var rates = [Math.min(0.28 * (charge + 0.3 - 1), 0.8),
+      Math.min(0.35 * (charge + 0.35 - 1), 0.9),
+      Math.min(0.42 * (charge + 0.4 - 1), 1),
+      Math.min(0.49 * (charge + 0.45 - 1), 1.1),
+      Math.min(0.56 * (charge + 0.5 - 1), 1.2)];
+    return rates[level];
+  }
+  //天空buff
+  var tkCriRates = [0.08, 0.1, 0.12, 0.14, 0.16];
+  //渔获buff
+  var yhEleDmgRates = [0.16, 0.20, 0.24, 0.28, 0.32];
+  var yhCriRates = [0.06, 0.075, 0.09, 0.105, 0.12];
+  //断浪增伤buff
+  var dlEleDmgRates = function(teamChargeEx, level) {
+    var rates = [Math.min(0.0012 * teamChargeEx, 0.4),
+      Math.min(0.0015 * teamChargeEx, 0.5),
+      Math.min(0.0018 * teamChargeEx, 0.6),
+      Math.min(0.0021 * teamChargeEx, 0.7),
+      Math.min(0.0024 * teamChargeEx, 0.8)];
+    return rates[level];
+  }
+  //护摩生命buff
+  var hmHpRates = [0.20, 0.25, 0.30, 0.35, 0.40];
+  //护摩满血攻击buff
+  var hmAtkRates = [0.008, 0.01, 0.012, 0.014, 0.016];
+  //护摩半血攻击buff
+  var hmHalfAtkRates = [0.01, 0.012, 0.014, 0.016, 0.018];
+  //e增伤倍率
+  var power = 90;
+  var eEleDmgRates = [0.0022*power, 0.0023*power, 0.0024*power, 0.0025*power, 0.0026*power, 0.0027*power,
+    0.0028*power, 0.0029*power, 0.0030*power, 0.0030*power, 0.0030*power, 0.0030*power, 0.0030*power];
+  //q倍率
+  var qRates = function(will, level) {
+    var rates = [4.01 + 0.0398 * will, 4.31 + 0.0418 * will, 4.61 + 0.0447 * will, 5.01 + 0.0486 * will, 5.31 + 0.0515 * will,
+      5.61 + 0.0544 * will, 6.01 + 0.0583 * will, 6.41 + 0.0622 * will, 6.81 + 0.0661 * will, 7.21 + 0.07 * will,
+      7.62 + 0.0739 * will, 8.02 + 0.0778 * will, 8.52 + 0.0826 * will];
+    return rates[level];
+  }
 
-            $("#hpEx").val(result.data.words[0].text.replaceAll("+","").replaceAll("%","").replaceAll(" ","").replaceAll(".",""));
-            $("#atkEx").val(result.data.words[1].text.replaceAll("+","").replaceAll("%","").replaceAll(" ","").replaceAll(".",""));
-            $("#masterEx").val(result.data.words[3].text.replaceAll("+","").replaceAll("%","").replaceAll(" ","").replaceAll(".",""));
-            $("#criEx").val(result.data.words[5].text.replaceAll("+","").replaceAll("%","").replaceAll(" ",""));
-            $("#criDmgEx").val(result.data.words[6].text.replaceAll("+","").replaceAll("%","").replaceAll(" ",""));
-            $("#chargeEx").val(result.data.words[9].text.replaceAll("+","").replaceAll("%","").replaceAll(" ",""));
-            showLoading(false);
-            await worker.terminate();
-        }
+  //副词条每条平均分
+  var atkAvg = 4.955/100;//大攻击
+  var criDAvg = 6.605/100;//爆伤
+  var chargeAvg = 5.505;//充能
+
+  $("#ok").on("click", function (event) {
+    //圣遗物属性
+    var hpEx = $("#hpEx").val()/1;//生命
+    var atkEx = $("#atkEx").val()/1;//攻击
+    var masterEx = $("#masterEx").val()/1;//精通
+    var criEx = $("#criEx").val()/100;//暴击
+    var criDmgEx = $("#criDmgEx").val()/100;//爆伤
+    var chargeEx = $("#chargeEx").val()/100;//充能
+    var teamChargeEx = $("#teamChargeEx").val()/1;//队伍能量
+    var lb = $("#lb").is(':checked');
+
+    //其他信息
+    var monsterLevel = $("#monsterLevel").val()/1;//怪物等级
+    var eleRes = $("#eleRes").val()/1;//怪物抗性
+    var eLevel = $("#eLevel").val()/1;//战技等级
+    var qLevel = $("#qLevel").val()/1;//大招等级
+    var life = $("#life").val()/1;//命座
+    var armsLevel = $("#armsLevel").val()/1;//武器精炼
+    var armsType = $("select[name='armsType']").val()/1;//武器类型
+    var suitType = $("select[name='suitType']").val()/1;//套装类型
+    var shalou = $("select[name='shalou']").val()/1;//沙漏转换
+    var ppsb = $("#ppsb").is(':checked');//配平双爆
+    var criStandard = $("#criStandard").val()/100;//标准暴击
+    var buffZs = $("#buff_zs").is(':checked');//宗室
+    var buffCl = $("#buff_cl").is(':checked');//翠绿
+    var buffZm = $("#buff_zm").is(':checked');//终末/苍古
+    var buffTl = $("#buff_tl").is(':checked');//讨龙
+    var buffJt = $("#buff_jt").is(':checked');//九条
+    var buffWy = $("#buff_wy").is(':checked');//万叶
+    var buffBnt = $("#buff_bnt").is(':checked');//班尼特
+    var buffJt6 = $("#buff_jt6").is(':checked');//九条6
+    var buffSt6 = $("#buff_st6").is(':checked');//砂糖6
+    var buffWyJt = $("#buff_wy_jt").val()/1;//万叶精通
+    var buffBntGj = $("#buff_bnt_gj").val()/1;//班尼特攻击
+    var buffJtGj = $("#buff_jt_gj").val()/1;//九条攻击
+    var addHp = $("#atkAdd").val()/1;//增加攻击条数
+    var addMaster = $("#chargeAdd").val()/1;//增加充能条数
+    var addCriD = $("#criDAdd").val()/1;//增加爆伤条数
+    addAtk = isNaN(addHp) ? 0 : addHp;
+    addCharge = isNaN(addMaster) ? 0 : addMaster;
+    addCriD = isNaN(addCriD) ? 0 : addCriD;
+
+    //基础属性（人物+武器）
+    var hpBase = 12907;//生命值白字
+    var atkBase = 337;//攻击力白字
+    switch (armsType) {
+      case 0: atkBase += 608;break;
+      case 1: atkBase += 674;break;
+      case 2: atkBase += 510;break;
+      case 3: atkBase += 620;break;
+      case 4: atkBase += 608;break;
+      case 5: atkBase += 608;break;
+    }
+    var hp = hpBase + hpEx;
+    var atk = atkBase + atkEx;
+    var master = 0 + masterEx;//角色基础精通
+    var cri = 0.05 + criEx;//角色基础暴击率
+    var criDmg = 0.5 + criDmgEx;//角色基础爆伤
+    var charge = 1.32 + chargeEx;//角色基础充能
+    var eleDmg = lb ? 0.466 : 0;//增伤
+
+    //沙漏转换
+    if (shalou === 1) {
+      charge -= 0.518;//充能沙
+      atk += 0.466 * atkBase;//攻击沙
+    }else if (shalou === 2) {
+      charge += 0.518;//充能沙
+      atk -= 0.466 * atkBase;//攻击沙
+    }
+    //调整词条
+    atk += addAtk * atkAvg * atkBase;
+    charge += addCharge * chargeAvg;
+    criDmg += addCriD * criDAvg;
+
+    //套装充能
+    switch (suitType) {
+      case 0: {
+        charge += 0.2;
+        break;
+      }
     }
 
-    $("#ok").on("click", function (event) {
-        //圣遗物属性
-        var hpEx = $("#hpEx").val()/1;//生命
-        var atkEx = $("#atkEx").val()/1;//攻击
-        var masterEx = $("#masterEx").val()/1;//精通
-        var criEx = $("#criEx").val()/100;//暴击
-        var criDmgEx = $("#criDmgEx").val()/100;//爆伤
-        var chargeEx = $("#chargeEx").val()/100;//充能
-        var teamChargeEx = $("#teamChargeEx").val()/1;//队伍能量
-        var will = $("#will").val()/1;//队伍能量
+    //武器
+    switch (armsType) {
+      case 0: {
+        charge += 0.496;
+        charge += dgChargeRates[armsLevel-1];
+        atk += atkBase * dgAtkRates(charge, armsLevel-1);
+        break;
+      }
+      case 1: {
+        charge += 0.368;
+        cri += tkCriRates[armsLevel-1];
+        break;
+      }
+      case 2: {
+        charge += 0.459;
+        cri += yhCriRates[armsLevel-1];
+        eleDmg += yhEleDmgRates[armsLevel-1];
+        break;
+      }
+      case 3: {
+        atk += atkBase*0.138;
+        eleDmg += dlEleDmgRates(teamChargeEx, armsLevel-1);
+        break;
+      }
+      case 4: {
+        criDmg += 0.662;
+        hp += hpBase * hmHpRates[armsLevel-1];//最大生命值
+        atk += hp * (hmAtkRates[armsLevel-1]);
+        break;
+      }
+      case 5: {
+        criDmg += 0.662;
+        hp += hpBase * hmHpRates[armsLevel-1];//最大生命值
+        atk += hp * (hmAtkRates[armsLevel-1] + hmHalfAtkRates[armsLevel-1]);
+        break;
+      }
+    }
 
-        //其他信息
-        var monsterLevel = $("#monsterLevel").val()/1;//怪物等级
-        var eleRes = $("#eleRes").val()/1;//怪物抗性
-        var eLevel = $("#eLevel").val()/1;//战技等级
-        var qLevel = $("#qLevel").val()/1;//大招等级
-        var life = $("#life").val()/1;//命座
-        var armsLevel = $("#armsLevel").val()/1;//武器精炼
-        var armsType = $("select[name='armsType']").val()/1;//武器类型
-        var suitType = $("select[name='suitType']").val()/1;//套装类型
-        var buffLb = $("#buff_lb").is(':checked');
-        var buffGb = $("#buff_gb").is(':checked');
-        var buffJt = $("#buff_jt").is(':checked');
-        var buffBnt = $("#buff_bnt").is(':checked');
-        var buffWy = $("#buff_wy").is(':checked');
-        var buffSt = $("#buff_st").is(':checked');
-        var buffZs = $("#buff_zs").is(':checked');
-        var buffZm = $("#buff_zm").is(':checked');
-        //基础属性（人物+武器）
-        var hpBase = 12907;//生命值白字
-        var atkBase = 337;//攻击力白字
-        switch (armsType) {
-            case 0: atkBase += 608;break;
-            case 1: atkBase += 674;break;
-            case 2: atkBase += 510;break;
-            case 3: atkBase += 620;break;
-            case 4: atkBase += 608;break;
-        }
-        var masterBase = 0;//角色基础精通
-        var criBase = 0.05;//角色基础暴击率
-        var criDmgBase = 0.5;//角色基础爆伤
-        var chargeBase = 1.32;//角色基础充能
-        var atkArms = 0;//武器副属性攻击
-        switch (armsType) {
-            case 3: atkArms += atkBase*0.138;break;
-        }
-        var chargeSuit = suitType === 0 ? 0.2 : 0;//套装充能
-        var chargeArms = 0;//武器充能
-        switch (armsType) {
-            case 0: chargeArms += 0.496;break;
-            case 1: chargeArms += 0.368;break;
-            case 2: chargeArms += 0.459;break;
-        }
+    //套装增伤
+    switch (suitType) {
+      case 0: {
+        eleDmg += Math.min(0.25*charge, 0.75);
+        break;
+      }
+    }
 
-        //var master = masterBase + masterEx + masterSuit;//面板精通
-        var cri = criBase + criEx;//面板暴击
-        var criDmgArms = armsType === 4 ? 0.662 : 0;//武器爆伤
-        var criDmg = criDmgBase + criDmgEx + criDmgArms;//面板爆伤
-        var charge = chargeBase + chargeEx + chargeSuit + chargeArms;//面板充能
+    //其他buff
+    if(buffJt) {
+      atk += buffJtGj * 0.86;
+    }
+    if(buffJt6) {
+      criDmg += 0.6;
+    }
+    if(buffBnt) {
+      atk += buffBntGj * 1.32;
+    }
+    if(buffSt6) {
+      eleDmg += 0.2;
+    }
+    if(buffWy) {
+      eleDmg += buffWyJt * 0.0004;
+    }
+    if(buffCl) {
+      eleRes -= 40;
+    }
+    if(buffZs) {
+      atk += atkBase * 0.2;
+    }
+    if(buffTl) {
+      atk += atkBase * 0.48;
+    }
+    if(buffZm) {
+      atk += atkBase * 0.2;
+    }
 
-        //稻光增伤buff
-        var dgChargeRates = [0.3, 0.35, 0.4, 0.45, 0.5];
-        var dgAtkRates = [Math.min(0.28*(charge+0.3-1), 0.8),
-            Math.min(0.35*(charge+0.35-1), 0.9),
-            Math.min(0.42*(charge+0.4-1), 1),
-            Math.min(0.49*(charge+0.45-1), 1.1),
-            Math.min(0.56*(charge+0.5-1), 1.2)];
-        //天空buff
-        var tkCriRates = [0.08, 0.1, 0.12, 0.14, 0.16];
-        //渔获buff
-        var yhEleDmgRates = [0.16, 0.20, 0.24, 0.28, 0.32];
-        var yhCriRates = [0.06, 0.075, 0.09, 0.105, 0.12];
-        //断浪增伤buff
-        var dlEleDmgRates = [Math.min(0.0012*teamChargeEx, 0.4),
-            Math.min(0.0015*teamChargeEx, 0.5),
-            Math.min(0.0018*teamChargeEx, 0.6),
-            Math.min(0.0021*teamChargeEx, 0.7),
-            Math.min(0.0024*teamChargeEx, 0.8)];
-        //护摩生命buff
-        var hmHpRates = [0.20, 0.25, 0.30, 0.35, 0.40];
-        //护摩满血攻击buff
-        var hmAtkRates = [0.008, 0.01, 0.012, 0.014, 0.016];
-        //护摩半血攻击buff
-        var hmHalfAtkRates = [0.01, 0.012, 0.014, 0.016, 0.018];
-        //e增伤倍率
-        var power = 90;
-        var eEleDmgRates = [0.0022*power, 0.0023*power, 0.0024*power, 0.0025*power, 0.0026*power, 0.0027*power,
-            0.0028*power, 0.0029*power, 0.0030*power, 0.0030*power, 0.0030*power, 0.0030*power, 0.0030*power];
-        //q倍率
-        var qRates = [4.01+0.0398*will, 4.31+0.0418*will, 4.61+0.0447*will, 5.01+0.0486*will, 5.31+0.0515*will,
-            5.61+0.0544*will, 6.01+0.0583*will, 6.41+0.0622*will, 6.81+0.0661*will, 7.21+0.07*will,
-            7.62+0.0739*will, 8.02+0.0778*will, 8.52+0.0826*will];
-        //q普攻buff
-        // var qARates = [0.0073*will, 0.0078*will, 0.0084*will, 0.0091*will, 0.0096*will, 0.0102*will, 0.0109*will,
-        //     0.0116*will, 0.0123*will, 0.0131*will, 0.0138*will, 0.0145*will, 0.0154*will];
+    //配平双爆
+    if(ppsb) {
+      var subCri = criStandard - cri;
+      cri = criStandard;
+      criDmg -= subCri*2;
+    }
 
-        //暴击率
-        switch (armsType) {
-            case 0: cri += 0;break;
-            case 1: cri += tkCriRates[armsLevel-1];break;
-            case 2: cri += yhCriRates[armsLevel-1];break;
-            case 3: cri += 0;break;
-        }
 
-        //攻击力乘区
-        var teamAtkBuff = 0;
-        if(buffJt) {
-            teamAtkBuff += (195 + 608) * 0.86;
-        }
-        if(buffBnt) {
-            teamAtkBuff += (191 + 608) * 1.32;
-        }
-        if(buffZs) {
-            teamAtkBuff += atkBase * 0.2;
-        }
-        if(buffZm) {
-            teamAtkBuff += atkBase * 0.2;
-        }
-        if(buffSt) {
-            teamAtkBuff += atkBase * 0.48;
-        }
-        var cupAtk = buffGb ? atkBase * 0.466 : 0;
-        var armsAtk = 0;//武器加攻
-        if(armsType === 0) {
-            armsAtk += atkBase * dgAtkRates[armsLevel-1];
-        }
-        if(armsType === 4) {
-            var armsHp = armsType === 0 ? hpBase * hmHpRates[armsLevel-1] : 0;//武器增加生命值
-            var hp = hpBase + hpEx + armsHp;//最大生命值
-            armsAtk = hp * (hmAtkRates[armsLevel-1]/* + hmHalfAtkRates[armsLevel-1]*/);
-        }
-        var atk = atkBase + atkEx + atkArms + teamAtkBuff + cupAtk + armsAtk;
-        console.log("攻击力:" + atk);
+    //基础伤害乘区
+    //攻击力
+    console.log("攻击力:" + atk);
+    //技能倍率
+    var skillRateQ1 = qRates(0, qLevel-1);
+    var skillRateQ2 = qRates(60, qLevel-1);
+    console.log("技能倍率零愿力:" + skillRateQ1);
+    console.log("技能倍率满愿力:" + skillRateQ2);
+    //固伤
+    var fixed = 0;
 
-        //技能倍率乘区
-        var skillRateQ = qRates[qLevel-1];
-        console.log("技能倍率:" + skillRateQ);
 
-        //增伤乘区
-        var cupEleDmg = buffLb ? 0.466 : 0;//杯子
-        if(armsType === 0) {
-            charge += dgChargeRates[armsLevel-1];
-        }
-        var inbornEleDmg = 0.4 * (charge - 1);//天赋
-        var skillEleDmg = eEleDmgRates[eLevel-1];
-        var suitEleDmg = 0;//套装
-        if(suitType === 2) {
-            suitEleDmg += Math.min(0.25*charge, 0.75);
-        }
-        var armsEleDmg = 0;//武器增伤
-        switch (armsType) {
-            case 2: armsEleDmg += yhEleDmgRates[armsLevel-1];break;
-            case 3: armsEleDmg += dlEleDmgRates[armsLevel-1];break;
-        }
-        var teamEleDmgBuff = 0;
-        if(buffWy) {
-            teamEleDmgBuff += 1000 * 0.0004;
-        }
-        // if(buffSt) {
-        //     teamEleDmgBuff += 0.2/* + 0.2*/;
-        // }
-        var eleDmgRate = 1 + cupEleDmg + inbornEleDmg + skillEleDmg + suitEleDmg + armsEleDmg + teamEleDmgBuff;
-        console.log("充能:" + charge);
-        console.log("增伤乘区:" + eleDmgRate);
+    //增伤乘区
+    var inbornEleDmg = 0.4 * (charge - 1);//天赋
+    var skillEleDmg = eEleDmgRates[eLevel-1];
+    var eleDmgRate = 1 + eleDmg + inbornEleDmg + skillEleDmg;
+    console.log("充能:" + charge);
+    console.log("增伤乘区:" + eleDmgRate);
 
-        //爆伤乘区
-        var criDmgRate = 1 + criDmg;
-        if(buffJt) {
-            criDmgRate += 0.6;
-        }
-        console.log("爆伤乘区:" + criDmgRate);
+    //爆伤乘区
+    var criDmgRate = 1 + criDmg;
+    console.log("爆伤乘区:" + criDmgRate);
 
-        //反应乘区
-        // var suitMaster = suitType === 0 ? 0 : 0;
-        // var masterRate = 278 * master / (master + 1400) / 100;//精通对增幅反应的加成
-        // var reactionRate = 1.5 * (1 + suitMaster + masterRate)
+    //反应乘区
+    // var suitMaster = suitType === 0 ? 0 : 0;
+    // var masterRate = 278 * master / (master + 1400) / 100;//精通对增幅反应的加成
+    // var reactionRate = 1.5 * (1 + suitMaster + masterRate)
 
-        //抗性乘区
-        var eleResPercent = eleRes/100;
-        if(buffWy || buffSt) {
-            eleResPercent -= 0.4;
-        }
-        var eleResRate = 0;
-        if(eleResPercent <=0) {
-            eleResRate = 1 - eleResPercent/2;
-        } else if (eleResPercent > 0 && eleResPercent < 75) {
-            eleResRate = 1 - eleResPercent;
-        } else {
-            eleResRate = 1/(4*eleResPercent + 1);
-        }
-        console.log("抗性乘区:" + eleResRate);
+    //抗性乘区
+    var eleResPercent = eleRes/100;
+    var eleResRate = 0;
+    if(eleResPercent <=0) {
+      eleResRate = 1 - eleResPercent/2;
+    } else if (eleResPercent > 0 && eleResPercent < 75) {
+      eleResRate = 1 - eleResPercent;
+    } else {
+      eleResRate = 1/(4*eleResPercent + 1);
+    }
+    console.log("抗性乘区:" + eleResRate);
 
-        //防御乘区
-        var playerLevel = 90;//玩家等级
-        var monsterDef = monsterLevel * 5 + 500;//怪物防御力
-        var defAddBuff = 0;//增防
-        var defSubBuff = 0;//减防
-        var defIgnBuff = 0;//无视
-        if(life >= 2) {
-            defIgnBuff += 0.6;
-        }
-        var defRate = (playerLevel + 100) * 5 / ((playerLevel + 100) * 5 + monsterDef * ( 1 + defAddBuff - defSubBuff) * (1 - defIgnBuff));
-        console.log("防御乘区:" + defRate);
+    //防御乘区
+    var playerLevel = 90;//玩家等级
+    var monsterDef = monsterLevel * 5 + 500;//怪物防御力
+    var defAddBuff = 0;//增防
+    var defSubBuff = 0;//减防
+    var defIgnBuff = 0;//无视
+    if(life >= 2) {
+      defIgnBuff += 0.6;
+    }
+    var defRate = (playerLevel + 100) * 5 / ((playerLevel + 100) * 5 + monsterDef * ( 1 + defAddBuff - defSubBuff) * (1 - defIgnBuff));
+    console.log("防御乘区:" + defRate);
 
-        //暴击伤害
-        var dps = atk * skillRateQ * eleDmgRate * eleResRate * defRate * criDmgRate;
-        //未暴击伤害
-        var dps_unCri = dps / criDmgRate;
-        //期望伤害
-        var except = dps / (1 + criDmg) * (1 + criDmg * cri);
+    //暴击伤害
+    var dps = (atk * skillRateQ1 + fixed) * eleDmgRate * eleResRate * defRate * criDmgRate;
+    //未暴击伤害
+    var dps_unCri = dps / criDmgRate;
+    //期望伤害
+    var except = dps / (1 + criDmg) * (1 + criDmg * cri);
 
-        $("#dps").text(dps.toFixed(0));
-        $("#dps_unCri").text(dps_unCri.toFixed(0));
-        $("#except").text(except.toFixed(0));
-    });
+    //暴击伤害
+    var dps2 = (atk * skillRateQ2 + fixed) * eleDmgRate * eleResRate * defRate * criDmgRate;
+    //未暴击伤害
+    var dps_unCri2 = dps2 / criDmgRate;
+    //期望伤害
+    var except2 = dps2 / (1 + criDmg) * (1 + criDmg * cri);
+
+    $("#dps").text(dps.toFixed(0));
+    $("#dps_unCri").text(dps_unCri.toFixed(0));
+    $("#except").text(except.toFixed(0));
+
+    $("#dps2").text(dps2.toFixed(0));
+    $("#dps_unCri2").text(dps_unCri2.toFixed(0));
+    $("#except2").text(except2.toFixed(0));
+  });
 </script>
 <script>
-    var opts = {
-        lines: 9, // The number of lines to draw
-        length: 0, // The length of each line
-        width: 10, // The line thickness
-        radius: 15, // The radius of the inner circle
-        corners: 1, // Corner roundness (0..1)
-        rotate: 0, // The rotation offset
-        color: '#fff', // #rgb or #rrggbb
-        speed: 1, // Rounds per second
-        trail: 60, // Afterglow percentage
-        shadow: false, // Whether to render a shadow
-        hwaccel: false, // Whether to use hardware acceleration
-        className: 'spin', // The CSS class to assign to the spinner
-        zIndex: 2e9, // The z-index (defaults to 2000000000)
-        top: '50%', // Top position relative to parent in px
-        left: '50%' // Left position relative to parent in px
-    };
-    var spinner = new Spinner(opts);
-    //显示与隐藏加载动画
-    function showLoading(result) {
-        var spinContainer = document.getElementById("foo");
-        if (result) {undefined
-            var target = $(spinContainer).get(0);
-            spinner.spin(target);
-            spinContainer.style.height = document.documentElement.clientHeight + "px";
-            $(spinContainer).show();
-        } else {undefined
-            spinner.spin();
-            $(spinContainer).hide();
-        }
+  var opts = {
+    lines: 9, // The number of lines to draw
+    length: 0, // The length of each line
+    width: 10, // The line thickness
+    radius: 15, // The radius of the inner circle
+    corners: 1, // Corner roundness (0..1)
+    rotate: 0, // The rotation offset
+    color: '#fff', // #rgb or #rrggbb
+    speed: 1, // Rounds per second
+    trail: 60, // Afterglow percentage
+    shadow: false, // Whether to render a shadow
+    hwaccel: false, // Whether to use hardware acceleration
+    className: 'spin', // The CSS class to assign to the spinner
+    zIndex: 2e9, // The z-index (defaults to 2000000000)
+    top: '50%', // Top position relative to parent in px
+    left: '50%' // Left position relative to parent in px
+  };
+  var spinner = new Spinner(opts);
+  //显示与隐藏加载动画
+  function showLoading(result) {
+    var spinContainer = document.getElementById("foo");
+    if (result) {undefined
+      var target = $(spinContainer).get(0);
+      spinner.spin(target);
+      spinContainer.style.height = document.documentElement.clientHeight + "px";
+      $(spinContainer).show();
+    } else {undefined
+      spinner.spin();
+      $(spinContainer).hide();
     }
+  }
 </script>
 </body>
 </html>
