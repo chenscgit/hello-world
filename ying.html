@@ -191,6 +191,8 @@
         充能+<input id="chargeAdd" placeholder="条数" value="0" style="width: 40px"/>5.505%
         <br/>
         爆伤+<input id="criDAdd" placeholder="条数" value="0" style="width: 40px"/>6.605%
+        <br/>
+        暴击+<input id="criAdd" placeholder="条数" value="0" style="width: 40px"/>3.295%
       </div>
       <button id="close1" style="display:none" onclick="javaScript:$('#add').hide();$('#close1').hide();$('#open1').show();">收起</button>
     </td>
@@ -359,7 +361,8 @@
   //副词条每条平均分
   var atkAvg = 4.955/100;//大攻击
   var criDAvg = 6.605/100;//爆伤
-  var chargeAvg = 5.505;//充能
+  var chargeAvg = 5.505/100;//充能
+  var criAvg = 3.295/100;//暴击
 
   $("#ok").on("click", function (event) {
     //圣遗物属性
@@ -400,9 +403,11 @@
     var addHp = $("#atkAdd").val()/1;//增加攻击条数
     var addMaster = $("#chargeAdd").val()/1;//增加充能条数
     var addCriD = $("#criDAdd").val()/1;//增加爆伤条数
+    var addCri = $("#criAdd").val()/1;//增加暴击条数
     addAtk = isNaN(addHp) ? 0 : addHp;
     addCharge = isNaN(addMaster) ? 0 : addMaster;
     addCriD = isNaN(addCriD) ? 0 : addCriD;
+    addCri = isNaN(addCri) ? 0 : addCri;
 
     //基础属性（人物+武器）
     var hpBase = 12907;//生命值白字
@@ -444,6 +449,7 @@
     atk += addAtk * atkAvg * atkBase;
     charge += addCharge * chargeAvg;
     criDmg += addCriD * criDAvg;
+    cri += addCri * criAvg;
 
     //套装充能
     switch (suitType) {
