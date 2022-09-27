@@ -144,6 +144,9 @@
         <option value = "3">断浪</option>
         <option value = "4">护摩满血</option>
         <option value = "5">护摩半血</option>
+        <option value = "6">赤沙(1层)</option>
+        <option value = "7">赤沙(2层)</option>
+        <option value = "8">赤沙(3层)</option>
       </select>
     </td>
   </tr>
@@ -212,14 +215,22 @@
         <br/>
         <input type="checkbox" id="buff_st6" value="0"/>砂糖6命
         <br/>
+        <input type="checkbox" id="buff_st" value="0"/>砂糖
+        <input id="buff_st_jt" size="1" placeholder="精通" value="800"/>
+        <br/>
         <input type="checkbox" id="buff_wy" value="0"/>万叶
         <input id="buff_wy_jt" size="1" placeholder="精通" value="1000"/>
+        <br/>
+        <input type="checkbox" id="buff_wy2" value="0"/>万叶2命
         <br/>
         <input type="checkbox" id="buff_zs" value="0"/>宗室4
         <br/>
         <input type="checkbox" id="buff_cl" value="0"/>翠绿4
         <br/>
-        <input type="checkbox" id="buff_zm" value="0"/>终末/苍古精1
+        <input type="checkbox" id="buff_jg" value="0"/>教官4
+        <br/>
+        <input type="checkbox" id="buff_zm" value="0"/>终末精
+        <input id="zmLevel" size="1" placeholder="精炼" value="1"/>
         <br/>
         <input type="checkbox" id="buff_tl" value="0"/>讨龙精5
         <br/>
@@ -316,6 +327,12 @@
     }
   }
 
+  //赤沙攻击buff
+  //var csLevel = 1;
+  var csAtkRates = function(level, csLevel) {
+    var rates = [0.52 + 0.28 * csLevel, 0.65 + 0.35 * csLevel, 0.78 + 0.42 * csLevel, 0.91 + 0.49 * csLevel, 1.04 + 0.56 * csLevel];
+    return rates[level];
+  }
   //稻光增伤buff
   var dgChargeRates = [0.3, 0.35, 0.4, 0.45, 0.5];
   var dgAtkRates = function(charge, level) {
@@ -400,6 +417,11 @@
     var buffWyJt = $("#buff_wy_jt").val()/1;//万叶精通
     var buffBntGj = $("#buff_bnt_gj").val()/1;//班尼特攻击
     var buffJtGj = $("#buff_jt_gj").val()/1;//九条攻击
+    var buffJg = $("#buff_jg").is(':checked');//教官
+    var buffSt = $("#buff_st").is(':checked');//砂糖
+    var buffWy2 = $("#buff_wy2").is(':checked');//万叶2
+    var buffStJt = $("#buff_st_jt").val()/1;//砂糖精通
+    var zmLevel = $("#zmLevel").val()/1;//终末精炼
     var addHp = $("#atkAdd").val()/1;//增加攻击条数
     var addMaster = $("#chargeAdd").val()/1;//增加充能条数
     var addCriD = $("#criDAdd").val()/1;//增加爆伤条数
@@ -419,6 +441,9 @@
       case 3: atkBase += 620;break;
       case 4: atkBase += 608;break;
       case 5: atkBase += 608;break;
+      case 6: atkBase += 542;break;//赤沙1
+      case 7: atkBase += 542;break;//赤沙2
+      case 8: atkBase += 542;break;//赤沙3
     }
     var hp = hpBase + hpEx;
     var atk = atkBase + atkEx;
@@ -450,6 +475,49 @@
     charge += addCharge * chargeAvg;
     criDmg += addCriD * criDAvg;
     cri += addCri * criAvg;
+
+    //其他buff
+    if(buffJt) {
+      atk += buffJtGj * 0.86;
+    }
+    if(buffJt6) {
+      criDmg += 0.6;
+    }
+    if(buffBnt) {
+      atk += buffBntGj * 1.32;
+    }
+    if(buffSt6) {
+      eleDmg += 0.2;
+    }
+    if(buffWy) {
+      eleDmg += buffWyJt * 0.0004;
+    }
+    if(buffCl) {
+      eleRes -= 40;
+    }
+    if(buffZs) {
+      atk += atkBase * 0.2;
+    }
+    if(buffTl) {
+      atk += atkBase * 0.48;
+    }
+    //终末
+    if(buffZm) {
+      atk += atkBase * (0.2 + (zmLevel-1)*0.05);
+      master += 100 + (zmLevel-1)*25;
+    }
+    //教官buff
+    if(buffJg) {
+      master += 120;
+    }
+    //砂糖精通buff
+    if(buffSt) {
+      master += 50 + 0.2*buffStJt;
+    }
+    //万叶2命精通buff
+    if(buffWy2) {
+      master += 200;
+    }
 
     //套装充能
     switch (suitType) {
@@ -495,6 +563,21 @@
         atk += hp * (hmAtkRates[armsLevel-1] + hmHalfAtkRates[armsLevel-1]);
         break;
       }
+      case 6: {
+        atk += csAtkRates(armsLevel - 1, 1) * master;
+        cri += 0.441;
+        break;//赤沙
+      }
+      case 7: {
+        atk += csAtkRates(armsLevel - 1, 2) * master;
+        cri += 0.441;
+        break;//赤沙
+      }
+      case 8: {
+        atk += csAtkRates(armsLevel - 1, 3) * master;
+        cri += 0.441;
+        break;//赤沙
+      }
     }
 
     //套装增伤
@@ -503,35 +586,6 @@
         eleDmg += Math.min(0.25*charge, 0.75);
         break;
       }
-    }
-
-    //其他buff
-    if(buffJt) {
-      atk += buffJtGj * 0.86;
-    }
-    if(buffJt6) {
-      criDmg += 0.6;
-    }
-    if(buffBnt) {
-      atk += buffBntGj * 1.32;
-    }
-    if(buffSt6) {
-      eleDmg += 0.2;
-    }
-    if(buffWy) {
-      eleDmg += buffWyJt * 0.0004;
-    }
-    if(buffCl) {
-      eleRes -= 40;
-    }
-    if(buffZs) {
-      atk += atkBase * 0.2;
-    }
-    if(buffTl) {
-      atk += atkBase * 0.48;
-    }
-    if(buffZm) {
-      atk += atkBase * 0.2;
     }
 
     //配平双爆
@@ -544,6 +598,7 @@
 
     //基础伤害乘区
     //攻击力
+    console.log("精通:" + master);
     console.log("攻击力:" + atk);
     //技能倍率
     var skillRateQ1 = qRates(0, qLevel-1);
