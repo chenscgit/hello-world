@@ -80,7 +80,7 @@
     </tr>
     <tr>
         <td>生命值：</td>
-        <td><input id="hpEx" size="10" placeholder="生命值" value="13322"/></td>
+        <td><input id="hpEx" size="10" placeholder="生命值" value="12505"/></td>
     </tr>
     <tr>
         <td>攻击力：</td>
@@ -88,15 +88,15 @@
     </tr>
     <tr>
         <td>元素精通：</td>
-        <td><input id="masterEx" size="10" placeholder="元素精通" value="198"/></td>
+        <td><input id="masterEx" size="10" placeholder="元素精通" value="166"></td>
     </tr>
     <tr>
         <td>暴击率：</td>
-        <td><input id="criEx" size="10" placeholder="暴击率" value="64.2"/></td>
+        <td><input id="criEx" size="10" placeholder="暴击率" value="70.8"/></td>
     </tr>
     <tr>
         <td>暴击伤害：</td>
-        <td><input id="criDmgEx" size="10" placeholder="暴击伤害" value="83.9"/></td>
+        <td><input id="criDmgEx" size="10" placeholder="暴击伤害" value="90.1"/></td>
     </tr>
     <tr>
         <td>怪物等级：</td>
@@ -119,8 +119,12 @@
         <td><input id="qLevel" size="10" placeholder="大招等级" value="10"/></td>
     </tr>
     <tr>
+        <td>命座数量：</td>
+        <td><input id="cons" size="10" placeholder="命座数量" value="3"/></td>
+    </tr>
+    <tr>
         <td>武器精炼：</td>
-        <td><input id="armsLevel" size="10" placeholder="武器精炼" value="2"/></td>
+        <td><input id="armsLevel" size="10" placeholder="武器精炼" value="5"/></td>
     </tr>
     <tr>
         <td>武器类型：</td>
@@ -247,6 +251,10 @@
         <td id="except"></td>
     </tr>
     <tr>
+        <td>未反应期望: </td>
+        <td id="unRea"></td>
+    </tr>
+    <tr>
         <td> </td>
         <td></td>
     </tr>
@@ -265,10 +273,6 @@
     <tr>
         <td>期望伤害: </td>
         <td id="melt_except"></td>
-    </tr>
-    <tr>
-        <td>未反应伤害: </td>
-        <td id="unRea"></td>
     </tr>
     <tr>
         <td> </td>
@@ -295,6 +299,10 @@
         <td id="except2"></td>
     </tr>
     <tr>
+        <td>未反应期望: </td>
+        <td id="unRea2"></td>
+    </tr>
+    <tr>
         <td> </td>
         <td></td>
     </tr>
@@ -315,12 +323,126 @@
         <td id="melt_except2"></td>
     </tr>
     <tr>
-        <td>未反应伤害: </td>
-        <td id="unRea2"></td>
+        <td> </td>
+        <td></td>
     </tr>
-</table>
-<div id="foo" style="width: 100%; height: 100%"></div>
-<script>
+    <tr>
+        <td> </td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>普攻-蒸发</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>暴击伤害: </td>
+        <td id="cri3"></td>
+    </tr>
+    <tr>
+        <td>未暴击伤害: </td>
+        <td id="unCri3"></td>
+    </tr>
+    <tr>
+        <td>期望伤害: </td>
+        <td id="except3"></td>
+    </tr>
+    <tr>
+        <td>未反应期望: </td>
+        <td id="unRea3"></td>
+    </tr>
+    <tr>
+        <td> </td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>普攻-融化</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>暴击伤害: </td>
+        <td id="melt_cri3"></td>
+    </tr>
+    <tr>
+        <td>未暴击伤害: </td>
+        <td id="melt_unCri3"></td>
+    </tr>
+    <tr>
+        <td>期望伤害: </td>
+        <td id="melt_except3"></td>
+    </tr>
+    <tr>
+        <td> </td>
+        <td></td>
+    </tr>
+    <tr>
+        <td> </td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>雪梅香-蒸发</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>暴击伤害: </td>
+        <td id="cri4"></td>
+    </tr>
+    <tr>
+        <td>未暴击伤害: </td>
+        <td id="unCri4"></td>
+    </tr>
+    <tr>
+        <td>期望伤害: </td>
+        <td id="except4"></td>
+    </tr>
+    <tr>
+        <td>未反应伤害: </td>
+        <td id="unRea4"></td>
+    </tr>
+    <tr>
+        <td> </td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>雪梅香-融化</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>暴击伤害: </td>
+        <td id="melt_cri4"></td>
+    </tr>
+    <tr>
+        <td>未暴击伤害: </td>
+        <td id="melt_unCri4"></td>
+    </tr>
+    <tr>
+        <td>期望伤害: </td>
+        <td id="melt_except4"></td>
+    </tr>
+    <tr>
+        <td> </td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>9azq总伤期望: </td>
+        <td id="total3"></td>
+    </tr>
+    <tr>
+        <td>18azq总伤期望: </td>
+        <td id="total4"></td>
+    </tr>
+    <tr>
+        <td>10azq总伤期望: </td>
+        <td id="total"></td>
+    </tr>
+    <tr>
+        <td>20azq总伤期望: </td>
+        <td id="total2"></td>
+    </tr>
+    <script>
     async function onFileChange() {
         showLoading(true);
         const exampleImage = $("[name=photo]").get(0).files[0];
@@ -393,9 +515,13 @@
     //护摩半血攻击buff
     var hmHalfAtkRates = [0.01, 0.012, 0.014, 0.016, 0.018];
     //普攻技能倍率
-    var aRates = [1.36, 1.452, 1.545, 1.669, 1.761, 1.869, 2.009, 2.148, 2.287, 2.426, 2.565];
+    var aRates = [0.469, 0.501, 0.533, 0.575, 0.607, 0.645, 0.693, 0.741, 0.789, 0.836, 0.884];
+    //重击技能倍率
+    var zRates = [1.36, 1.452, 1.545, 1.669, 1.761, 1.869, 2.009, 2.148, 2.287, 2.426, 2.565];
     //e技能buff
     var eRates = [0.0384, 0.0407, 0.043, 0.046, 0.0483, 0.0506, 0.0536, 0.0566, 0.0596, 0.0626, 0.0656, 0.0685, 0.0715];
+    //雪梅香倍率
+    var eRates2 = [0.64, 0.69, 0.74, 0.80, 0.85, 0.90, 0.96, 1.02, 1.09, 1.15, 1.22, 1.28, 1.36];
     //q技能倍率
     var qRates = [3.79, 4.02, 4.24, 4.54, 4.77, 4.99, 5.29, 5.58, 5.88, 6.17, 6.47, 6.76, 7.06];
 
@@ -420,6 +546,7 @@
         var aLevel = $("#aLevel").val()/1;//普攻等级
         var eLevel = $("#eLevel").val()/1;//元素战技等级
         var qLevel = $("#qLevel").val()/1;//元素爆发等级
+        var cons = $("#cons").val()/1;//命座
         var armsLevel = $("#armsLevel").val()/1;//武器精炼
         var armsType = $("select[name='armsType']").val()/1;//武器类型，0-护摩，1-匣里，2-千岩3，3-千岩4，4-赤沙
         var suitType = $("select[name='suitType']").val()/1;//套装类型，0-四魔女，1-四追忆，2-饰金3，3-饰金4
@@ -645,10 +772,13 @@
         var skillAtk = hp * eRates[eLevel-1];//技能加攻
         atk += skillAtk;
         //技能倍率
-        var skillRate = aRates[aLevel-1];
+        var skillRate = zRates[aLevel-1];
         var skillRate2 = qRates[qLevel-1];
+        var skillRate3 = aRates[qLevel-1];
+        var skillRate4 = eRates2[qLevel-1];
         //固伤
         var fixed = 0;
+        var fixedE = cons > 1 ? hp * 0.1 : 0;//2命雪梅香
 
         //增伤乘区
         var eleDmgRate = 1 + eleDmg;
@@ -689,6 +819,8 @@
         var except = dps / (1 + criDmg) * (1 + criDmg * cri);
         //未暴击伤害
         var unCri = dps / criDmgRate;
+        //未反应期望
+        var unRea = except / reactionRate;
         //融化
         //暴击伤害
         var melt_dps = (atk * skillRate + fixed) * eleDmgRate * eleResRate * defRate * criDmgRate * reactionRate2;
@@ -696,8 +828,6 @@
         var melt_except = melt_dps / (1 + criDmg) * (1 + criDmg * cri);
         //未暴击伤害
         var melt_unCri = melt_dps / criDmgRate;
-        //未反应伤害
-        var unRea = dps / reactionRate;
 
         //大招
         //蒸发
@@ -707,6 +837,8 @@
         var except2 = dps2 / (1 + criDmg) * (1 + criDmg * cri);
         //未暴击伤害
         var unCri2 = dps2 / criDmgRate;
+        //未反应期望
+        var unRea2 = except2 / reactionRate;
         //融化
         //暴击伤害
         var melt_dps2 = (atk * skillRate2 + fixed) * eleDmgRateQ * eleResRate * defRate * criDmgRate * reactionRate2;
@@ -714,25 +846,93 @@
         var melt_except2 = melt_dps2 / (1 + criDmg) * (1 + criDmg * cri);
         //未暴击伤害
         var melt_unCri2 = melt_dps2 / criDmgRate;
-        //未反应伤害
-        var unRea2 = dps2 / reactionRate;
+
+        //普攻1段
+        //蒸发
+        //暴击伤害
+        var dps3 = (atk * skillRate3 + fixed) * eleDmgRateQ * eleResRate * defRate * criDmgRate * reactionRate;
+        //期望伤害
+        var except3 = dps3 / (1 + criDmg) * (1 + criDmg * cri);
+        //未暴击伤害
+        var unCri3 = dps3 / criDmgRate;
+        //未反应期望
+        var unRea3 = except3 / reactionRate;
+        //融化
+        //暴击伤害
+        var melt_dps3 = (atk * skillRate3 + fixed) * eleDmgRateQ * eleResRate * defRate * criDmgRate * reactionRate2;
+        //期望伤害
+        var melt_except3 = melt_dps3 / (1 + criDmg) * (1 + criDmg * cri);
+        //未暴击伤害
+        var melt_unCri3 = melt_dps3 / criDmgRate;
+
+        //雪梅香
+        //蒸发
+        //暴击伤害
+        var dps4 = (atk * skillRate4 + fixedE) * eleDmgRateQ * eleResRate * defRate * criDmgRate * reactionRate;
+        //期望伤害
+        var except4 = dps4 / (1 + criDmg) * (1 + criDmg * cri);
+        //未暴击伤害
+        var unCri4 = dps4 / criDmgRate;
+        //未反应期望
+        var unRea4 = except4 / reactionRate;
+        //融化
+        //暴击伤害
+        var melt_dps4 = (atk * skillRate4 + fixedE) * eleDmgRateQ * eleResRate * defRate * criDmgRate * reactionRate2;
+        //期望伤害
+        var melt_except4 = melt_dps4 / (1 + criDmg) * (1 + criDmg * cri);
+        //未暴击伤害
+        var melt_unCri4 = melt_dps4 / criDmgRate;
+
+        //一轮循环胡桃总伤期望，10az+q，普攻1/4/7/10蒸发，重击全蒸发，雪梅香全蒸发
+        var total = except3 * 4 + unRea3 * 6 + except * 10 + except4 *2 + except2;
+        //两轮循环胡桃总伤期望，10az+q+10az，普攻1/4/7/10蒸发，重击全蒸发，雪梅香全蒸发
+        var total2 = (except3 * 4 + unRea3 * 6 + except * 10 + except4 * 2) * 2 + except2;
+        //一轮循环胡桃总伤期望，9az+q，普攻1/4/7蒸发，重击全蒸发，雪梅香全蒸发
+        var total3 = except3 * 3 + unRea3 * 6 + except * 9 + except4 *2 + except2;
+        //两轮循环胡桃总伤期望，9az+q+9az，普攻1/4/7蒸发，重击全蒸发，雪梅香全蒸发
+        var total4 = (except3 * 3 + unRea3 * 6 + except * 9 + except4 * 2) * 2 + except2;
 
         $("#cri").text(dps.toFixed(0));
         $("#except").text(except.toFixed(0));
         $("#unCri").text(unCri.toFixed(0));
+        $("#unRea").text(unRea.toFixed(0));
         $("#melt_cri").text(melt_dps.toFixed(0));
         $("#melt_except").text(melt_except.toFixed(0));
         $("#melt_unCri").text(melt_unCri.toFixed(0));
-        $("#unRea").text(unRea.toFixed(0));
+
         $("#cri2").text(dps2.toFixed(0));
         $("#except2").text(except2.toFixed(0));
         $("#unCri2").text(unCri2.toFixed(0));
+        $("#unRea2").text(unRea2.toFixed(0));
         $("#melt_cri2").text(melt_dps2.toFixed(0));
         $("#melt_except2").text(melt_except2.toFixed(0));
         $("#melt_unCri2").text(melt_unCri2.toFixed(0));
-        $("#unRea2").text(unRea2.toFixed(0));
+
+        $("#cri3").text(dps3.toFixed(0));
+        $("#except3").text(except3.toFixed(0));
+        $("#unCri3").text(unCri3.toFixed(0));
+        $("#unRea3").text(unRea3.toFixed(0));
+        $("#melt_cri3").text(melt_dps3.toFixed(0));
+        $("#melt_except3").text(melt_except3.toFixed(0));
+        $("#melt_unCri3").text(melt_unCri3.toFixed(0));
+
+        $("#cri4").text(dps4.toFixed(0));
+        $("#except4").text(except4.toFixed(0));
+        $("#unCri4").text(unCri4.toFixed(0));
+        $("#unRea4").text(unRea4.toFixed(0));
+        $("#melt_cri4").text(melt_dps4.toFixed(0));
+        $("#melt_except4").text(melt_except4.toFixed(0));
+        $("#melt_unCri4").text(melt_unCri4.toFixed(0));
+
+        $("#total").text(total.toFixed(0));
+        $("#total2").text(total2.toFixed(0));
+        $("#total3").text(total3.toFixed(0));
+        $("#total4").text(total4.toFixed(0));
+
     });
 </script>
+</table>
+<div id="foo" style="width: 100%; height: 100%"></div>
 <script>
     var opts = {
         lines: 9, // The number of lines to draw
